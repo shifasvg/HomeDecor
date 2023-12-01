@@ -294,7 +294,7 @@ registerUser: async (req,res) => {
         const user = new usersCollection ({
             name: userDetails.name,
             email: userDetails.email,
-            mobile: userDetails.mobile,
+            mobile: userDetails.mobile, 
             password: passwordHash
         });
         const userData = await user.save();
