@@ -1,0 +1,336 @@
+<% if (typeof user !== 'undefined') { %>
+    <%- include('../partials/userLoggedHeader.ejs') %>
+    <% } else { %>
+        <%- include('../partials/userHeader.ejs') %>
+        <% } %>
+        
+        <% if (typeof userAlertmsg !== 'undefined') { %>
+            <div class="message-box" id="alertmsgID"><%= userAlertmsg %></div>
+        <% } %>
+
+ <!-- Page Banner Section Start -->
+ <div class="page-banner-section section bg-image" style="height: 100px;background-color: rgb(226, 226, 226);">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Page Banner Section End -->   
+<% if (product && product.category) { %>
+ <!-- Single Product Section Start -->
+ <div class="single-product-section section pt-60 pt-lg-40 pt-md-30 pt-sm-20 pt-xs-25 pb-100 pb-lg-80 pb-md-40 pb-sm-30 pb-xs-20">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="shop-area">
+                    <div class="row">
+                        <div class="col-md-6 pr-35 pr-lg-15 pr-md-15 pr-sm-15 pr-xs-15">
+                            <!-- Product Details Left -->
+                            <div class="product-details-left">
+                                <div class="product-details-images-2 tf-element-carousel">
+                                    <% for (let i = 0; i < product.images.length; i++) { %>
+                                    <div class="lg-image">
+                                        <img src="images/<%= product.images[i].filename %>" alt="">
+                                        <a href="images/<%= product.images[i].filename %>" class="popup-img venobox" data-gall="myGallery"><i class="fa fa-expand"></i></a>
+                                    </div>
+                                    <% } %>
+                                </div>
+                                <div class="product-details-thumbs-2 mt-0">
+                                    <% for (let i = 0; i < product.images.length; i++) { %>
+                                        <div class="sm-image">
+                                            <img src="images/<%= product.images[i].filename %>" alt="product image thumb">
+                                        </div>
+                                    <% } %>
+                                </div>
+                                
+                            </div>
+                            <!--Product Details Left -->
+                        </div>
+                        <div class="col-md-6">
+                            <!--Product Details Content Start-->
+                            <div class="product-details-content">
+                               
+                              
+                                    <h2><%= product.productname %></h2>
+                                    <!-- Other product details -->
+                               
+                                
+
+                                <div class="single-product-reviews">
+                                    <i class="fa fa-star active"></i>
+                                    <i class="fa fa-star active"></i>
+                                    <i class="fa fa-star active"></i>
+                                    <i class="fa fa-star active"></i>
+                                    <i class="fa fa-star-o"></i>
+                                    <a class="review-link" href="#">(1 customer review)</a>
+                                </div>
+                                <div class="single-product-price">
+                                    <span class="price new-price"><% if (product.discount !== "0%") { %><span style="color: red; font-size: 22px;font-weight: 600;">-<%= product.discount %>  </span> <% } %>₹<%= product.price %></span>
+                                    <% if (product.price !== product.mrp) { %> <span class="regular-price">M.R.P<%= product.mrp %></span> <% } %>
+                                </div>
+                                
+                                <div class="single-product-quantity">
+                                    <% if (typeof user !== 'undefined') { %>
+                                    <form class="add-quantity" action="/addtocart?prdId=<%=product._id%>&" method="post">
+                                        
+                                        <div class="product-quantity">
+                                            <% if(existingprd) { %>
+                                                <input name="qty" id="quantityInput" value="<%= existingQty %>" type="number" min="1" max="<%= product.stock %>" data-max-stock="<%= product.stock %>" oninput="validateQuantity()">
+                                                <% }else{ %>
+                                                <input name="qty" id="quantityInput" value="1" type="number" min="1" max="<%= product.stock %>" data-max-stock="<%= product.stock %>" oninput="validateQuantity()">
+                                                <% } %>
+                                           
+                                        </div>
+
+
+                                        <div class="add-to-link">
+                                            
+                                            <% if (product.stock !== 0 && existingprd) { %>
+                                                <input type="hidden" name="goToCart" value="true">
+                                                <button type="submit" class="btn" id="addToCartbutton"><i class="fa fa-shopping-bag"></i>Go to cart</button>
+                                                
+                                                <% }else if(product.stock !== 0){ %>
+                                            <button type="submit" class="btn" id="addToCartbutton"><i class="fa fa-shopping-bag"></i>add to cart</button>
+                                         
+                                            <% }else if(product.isDeleted == true){ %>
+                                                <button class="btn" style="background-color: rgb(211, 211, 211);" disabled><i class="fa fa-shopping-bag" ></i>add to cart</button><br><p style="color: red;">product unavailable now!</p>
+                                                <% } else{ %>
+                                                    <button class="btn" style="background-color: red;"><i class="fa fa-shopping-bag" disabled></i>out of stock</button>
+                                                    <% } %>
+                                           
+                                        </div>
+                                    </form>
+                                    <%}else{%>
+                                        <a href="/signin?userMessage=Please login/signup for purchasing any product">
+                                            <button  class="btn" id="addToCartbutton"><i class="fa fa-shopping-bag"></i>add to cart</button>
+                                        </a>
+                                        <% } %>
+                                        <div class="error-message" id="errorMessage" style="color: red;"></div> <!--max stock available alert msg-->
+                                </div>
+
+                                
+
+                                <div class="wishlist-compare-btn">
+                                    <a href="#" class="wishlist-btn">Add to Wishlist</a>
+                                    <a href="#" class="add-compare">Compare</a>
+                                </div>
+                                <div class="product-meta">
+                                    <% if (product && product.category.active===true) { %>
+                                        <span class="posted-in">
+                                            Category: 
+                                            <a href="#"><%= product.category.categoryName %></a>
+                                        </span>
+                                    <% } else { %>
+                                        <span class="posted-in">
+                                            Category: Not Available
+                                        </span>
+                                    <% } %>
+                                    
+                                </div>
+                                <div class="single-product-sharing">
+                                    <h3>Share this product</h3>
+                                    <ul>
+                                        <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-pinterest"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-instagram"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-vimeo"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <!--Product Details Content End-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Single Product Section End -->
+
+<!--Product Description Review Section Start-->
+<div class="product-description-review-section section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="product-review-tab section">
+                    <!--Review And Description Tab Menu Start-->
+                    <ul class="nav dec-and-review-menu">
+                        <li>
+                            <a class="active" data-bs-toggle="tab" href="#description">Description</a>
+                        </li>
+                        <li>
+                            <a data-bs-toggle="tab" href="#reviews">Reviews (1)</a>
+                        </li>
+                    </ul>
+                    <!--Review And Description Tab Menu End-->
+                    <!--Review And Description Tab Content Start-->
+                    <div class="tab-content product-review-content-tab" id="myTabContent-4">
+                        <div class="tab-pane fade active show" id="description">
+                            <div class="single-product-description">
+                                <p><%= product.description %></p>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="reviews">
+                            <div class="review-page-comment">
+                                <h2>1 review for Sit voluptatem</h2>
+                                <ul>
+                                    <li>
+                                        <div class="product-comment">
+                                            <img src="assets/images/icons/author.png" alt="">
+                                            <div class="product-comment-content">
+                                                <div class="product-reviews">
+                                                    <i class="fa fa-star"></i>
+                                                    <i class="fa fa-star"></i>
+                                                    <i class="fa fa-star"></i>
+                                                    <i class="fa fa-star"></i>
+                                                    <i class="fa fa-star-o"></i>
+                                                </div>
+                                                <p class="meta">
+                                                    <strong>admin</strong> - <span>November 22, 2018</span>
+                                                    <div class="description">
+                                                        <p>Good Product</p>
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <div class="review-form-wrapper">
+                                    <div class="review-form">
+                                        <span class="comment-reply-title">Add a review </span>
+                                        <form action="#">
+                                            <p class="comment-notes">
+                                                <span id="email-notes">Your email address will not be published.</span>
+                                                Required fields are marked
+                                                <span class="required">*</span>
+                                            </p>
+                                            <div class="comment-form-rating">
+                                                <label>Your rating</label>
+                                                <div class="rating">
+                                                    <i class="fa fa-star-o"></i>
+                                                    <i class="fa fa-star-o"></i>
+                                                    <i class="fa fa-star-o"></i>
+                                                    <i class="fa fa-star-o"></i>
+                                                    <i class="fa fa-star-o"></i>
+                                                </div>
+                                            </div>
+                                            <div class="input-element">
+                                                <div class="comment-form-comment">
+                                                    <label>Comment</label>
+                                                    <textarea name="message" cols="40" rows="8"></textarea>
+                                                </div>
+                                                <div class="review-comment-form-author">
+                                                    <label>Name </label>
+                                                    <input required="required" type="text">
+                                                </div>
+                                                <div class="review-comment-form-email">
+                                                    <label>Email </label>
+                                                    <input required="required" type="text">
+                                                </div>
+                                                <div class="comment-submit">
+                                                    <button type="submit" class="form-button">Submit</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--Review And Description Tab Content End-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Product Description Review Section Start-->
+
+<!--Related Product section start-->
+<div class="product-section section pt-100 pt-lg-80 pt-md-70 pt-sm-60 pt-xs-50 pb-55 pb-lg-35 pb-md-25 pb-sm-15 pb-xs-5">
+    <div class="container">
+
+        <div class="row">
+            <div class="col">
+                <div class="section-title text-center mb-50 mb-xs-20">
+                    <h2>Related Products</h2>
+                </div>
+            </div>
+        </div>
+        <div class="row product-slider">
+            <% if ( relatedproducts && relatedproducts.length > 0 ) { %>
+                                                    
+                <% relatedproducts.forEach(function(relatedproduct) { %>
+            <div class="col">
+                <!--  Single Grid product Start -->
+                <div class="single-grid-product mb-40">
+                    <div class="product-image">
+                        
+                        <% if (relatedproduct.images.length === 1) { %>
+                            <a href="/product-view?id=<%=relatedproduct._id%>">
+                                <img src="/images/<%= relatedproduct.images[0].filename %>" class="img-fluid" alt="">
+                            </a>
+                        <% } else { %>
+                            <a href="/product-view?id=<%=relatedproduct._id%>">
+                                <% if (relatedproduct.stock===0) { %>
+                                    <div class="out-of-stock-message">Out of Stock</div>
+                                <% } %>
+                                <img src="/images/<%= relatedproduct.images[0].filename %>" class="img-fluid" alt="">
+                                <img src="/images/<%= relatedproduct.images[1].filename %>" class="img-fluid" alt=""> 
+                            </a>
+                        <% } %>
+
+                        <div class="product-action">
+                            <ul>
+                                <li><a href="cart.html"><i class="fa fa-cart-plus"></i></a></li>
+                                <li><a href="#quick-view-modal-container" data-bs-toggle="modal" title="Quick View"><i class="fa fa-eye"></i></a></li>
+                                <li><a href="wishlit.html"><i class="fa fa-heart-o"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="product-content">
+                        <h3 class="title"> <a href="/product-view?id=<%=relatedproduct._id%>"><%=relatedproduct.productname%></a></h3>
+                        <p class="product-price"><span class="discounted-price">Rs.<%=relatedproduct.price%></span>  <% if (relatedproduct.price !== relatedproduct.mrp) { %>
+                            <span class="main-price discounted">M.R.P <%= relatedproduct.mrp %></span>
+                            <span>(<%= relatedproduct.discount %> off)</span>
+                        <% } %></p>
+                    </div>
+                </div>
+                <!--  Single Grid product End -->
+            </div>
+            <% }) %>
+            <% } else { %>
+                <h4 class="text-center text-danger">Sorry, No related products available at this moment!</h4>
+                <% } %>
+           
+        </div>
+
+    </div>
+</div>
+<% } else { %>
+    <p>Product not found or category not available.</p>
+<% } %>
+
+<!--Product section end-->
+
+
+
+<%- include('partials/userFooter.ejs') %>
+<script>
+    function validateQuantity() {
+    var quantity = document.getElementById('quantityInput').value;
+    var maxStock = document.getElementById('quantityInput').getAttribute('data-max-stock');
+
+    if (parseInt(quantity) >= parseInt(maxStock)) {
+        document.getElementById('errorMessage').innerText = 'Maximum stocks available is ' + maxStock + '!';
+        return ; 
+    } else {
+        document.getElementById('errorMessage').innerText = '';
+        return true;
+    }
+}
+
+
+</script>

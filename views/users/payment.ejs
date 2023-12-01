@@ -1,0 +1,195 @@
+<% if (typeof user !== 'undefined') { %>
+    <%- include('../partials/userLoggedHeader.ejs') %>
+<% } else { %>
+    <%- include('../partials/userHeader.ejs') %>
+<% } %>
+
+<% if (typeof userAlertmsg !== 'undefined') { %>
+    <div class="message-box" id="alertmsgID"><%= userAlertmsg %></div>
+<% } %>
+
+<!-- Page Banner Section Start -->
+<div class="page-banner-section section bg-image" style="height: 100px; background-color: rgb(226, 226, 226);">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <!-- Add content if needed -->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Page Banner Section End -->
+
+<!-- Checkout section start -->
+<div class="checkout-section section pt-90 pt-lg-70 pt-md-60 pt-sm-50 pt-xs-40 pb-70 pb-lg-50 pb-md-40 pb-sm-30 pb-xs-20">
+    <div class="container" id="checkout">
+        <div class="row">
+            <div class="col-12">
+                <!-- Checkout Form Start-->
+                <h4 class="checkout-title">Review your order and make payment</h4>
+        
+                    <div class="row row-40">
+                        <div class="col-lg-7">
+                           
+                           
+                          
+                                
+                            <div class="billing-address-box">
+                                <h3 >Billing Address</h3>
+                                <p>  <strong><%= item.name %></strong>  <br> 
+                                <%= item.address %>, <%= item.landmark %> <br>
+                                <%= item.district %> District-<%= item.pincode %>,<%= item.state %></p>
+                                <p>Phone number <br> <%= item.mobile %></p>
+                              </div>
+                              
+                              <div class="billing-address-box">
+                                <h3>Payment Mode</h3>
+                                <p><%=selectedPaymentMethod%></p>
+                              </div>
+                              
+                      
+                        </div>
+
+                        <div class="col-lg-5" >
+                            <!-- Cart Total -->
+                            <div class="col-12 mb-60">
+                                
+                                <div class="checkout-cart-total" style="background-color: #f5f5f5;border-radius: 6px;">
+                                    <h4 class="checkout-title">Cart Total</h4>
+                                    <% let totalQuantity = 0; %>
+                                    <% cart.forEach(function(item) { %>
+                                    <% totalQuantity += item.qty; %>
+                                    <% }); %>
+                                    <h4>Product (<%= totalQuantity %> items) <span>Total</span></h4>
+                                    
+                                    <% let subtotal = 0; %>
+                                    <% cart.forEach(function(item) { %>
+                                    <% subtotal += item.qty*item.unit_price %>
+                                    <% }); %>
+                                    <p style="border-bottom: none;">Subtotal <span>₹<%= subtotal %></span></p>   
+                                    <p>Shipping Fee <span>₹ 00.00</span></p>
+                                    <h4>Grand Total <span>₹ <%= totalBill %></span></h4>
+                                    <% if(locals.keyId){%>
+                                        <input type="hidden" id="keyId" value="<%= keyId %>">
+                                        <% }%>
+                                </div>
+                                <button class="place-order btn btn-lg btn-round" id="" onclick="confirmOrder()">confirm order</button>
+
+                            </div>
+                            
+                              
+                           
+                        </div>
+                    </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Checkout section end -->
+
+<%- include('partials/userFooter.ejs') %>
+
+<script>
+    function confirmOrder(){
+        $.ajax({
+            url:"confirm-order",
+            method:"get",
+            success: (response) => {
+                if(response.codSuccess){
+                    console.log("COD working");
+                }else if (response.razorpay) {
+          console.log("razorpay working")
+          razorpay(response.order, response.bill)
+        }
+        else if(response.cartEmpty){
+          location.replace('/cart')
+        }
+            }
+        })
+    }
+</script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+     function razorpay(order, bill) {
+    console.log("razorpay function started");
+    let keyId = document.getElementById("keyId").value
+    console.log(keyId);
+    let options = {
+      "key": keyId, // Enter the Key ID generated from the Dashboard
+      "amount": bill * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+      "currency": "INR",
+      "name": "HomeDecor",
+      "description": "Furnitures",
+      "image": "",
+      "handler": function(response) {
+        RazoverifyPayment(response, order)
+      },
+      "prefill": {
+        "name": "HomeDecor",
+        "email": "HomeDecor12345",
+        "contact": "+91 8590909835"
+      },
+      "notes": {
+        "address": "HomeDecor,HustleHub Techpark,Somasundara palaya,Hsr Layout,Bangalore, Karnataka, India"
+      },
+      "theme": {
+        "color": "#feffe0"
+      }
+    }
+    console.log("heloo");
+    let rzp1 = new Razorpay(options);
+    console.log("heloo" + rzp1);
+    rzp1.open();
+  }
+
+  function RazoverifyPayment(payment, order) {
+    console.log("razorpayverify");
+    location.replace('/orderRedirect')
+
+    // $.ajax({
+    //   url: '/userhome/razo-verify-payment',
+    //   data: {
+    //     payment,
+    //     order
+    //   },
+    //   method: 'post',
+    //   success: (response) => {
+    //     if (response.status) {
+    //       console.log("succes")
+    //       location.href = '/show-confirm-order'
+    //     } else {
+    //       // need to render payment faild page
+    //       location.href = '/razorpayPaymentFailed'
+    //     }
+    //   }
+    // })
+  }
+
+</script>
+
+
+<!-- <script>
+    $(document).ready(function () {
+        $("#my_button").click(function () {
+            
+            // Send an AJAX POST request
+            $.ajax({
+                type: "POST",
+                url: "/confirm-order",
+               
+                success: function (response) {
+                    
+                    window.location.href = "/confirm-order";
+                },
+                error: function (error) {
+                    console.log(error);
+                    alert("Error confirming order. Please try again.");
+                }
+            });
+        });
+    });
+</script> -->
+
+

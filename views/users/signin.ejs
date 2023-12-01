@@ -1,0 +1,89 @@
+
+        <%- include('../partials/userHeader.ejs') %>
+
+
+        
+        <!-- Page Banner Section Start -->
+ <div class="page-banner-section section bg-image" style="height: 100px;background-color: rgb(226, 226, 226);">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+
+               
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Page Banner Section End -->   
+        <!--Login Register section start-->
+        <div class="login-register-section section pt-90 pt-lg-70 pt-md-60 pt-sm-55 pt-xs-45  pb-70 pb-lg-50 pb-md-40 pb-sm-30 pb-xs-20">
+            <div class="container">
+                <div class="row">
+                    <!--Login Form Start-->
+                    <div class="col-md-6 col-sm-6">
+                        <div class="customer-login-register">
+                            <div class="form-login-title">
+                                <h2>Sign In</h2>
+                                <% if (userAlertmsg) { %>
+                                    <div class="message-box" id="alertmsgID"><%= userAlertmsg %></div>
+                                <% } %>
+                            </div>
+                            <div class="login-form">
+                                <form action="/signin" id="signinForm" method="post">
+
+                                    <!--Email input-->
+                                    <div class="form-fild">
+                                        <p><label>Email <span class="required">*</span></label></p>
+                                        <input name="email" id="lEmail" value="" type="text">
+                                        <div class="error" id="lEmailErr"></div>
+                                    </div>
+
+                                    <!-- Password input -->
+                                    <div class="form-fild">
+                                        <p><label>Password <span class="required">*</span></label></p>
+                                        <input name="password" id="lPassword" value="" type="text">
+                                        <div class="error" id="lPassErr"></div>
+                                    </div>
+
+                                    <div class="lost-password">
+                                        <a href="/forgot-password">Forgot password?</a>
+                                    </div>
+                                    <div class="login-submit">
+                                        <button type="submit" class="btn">Log in</button>
+                                    </div>
+                                    <div><a href="/signup">Don't have an account? SignUp</a></div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!--Login Form End-->
+                   
+                </div>
+            </div>
+        </div>
+        <!--Login Register section end-->
+
+        <script>
+            const signinForm = document.getElementById('signinForm');
+          
+          // Attach an event listener to the form's submit event
+          signinForm.addEventListener('submit', function (event) {
+            // Prevent the default form submission
+            event.preventDefault();
+          
+            // Call the signupValidate function
+            const isValid = loginValidate();
+          
+            // If validation fails, do not submit the form
+            if (!isValid) {
+              return false;
+            } else {
+              signinForm.submit();
+            }
+            // If validation passes, you can manually submit the form
+            // This will trigger the actual form submission to /register
+          });
+          </script>
+
+<%- include('partials/userFooter.ejs') %>

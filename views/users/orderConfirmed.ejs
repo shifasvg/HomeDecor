@@ -1,0 +1,100 @@
+<% if (typeof user !== 'undefined') { %>
+    <%- include('../partials/userLoggedHeader.ejs') %>
+<% } else { %>
+    <%- include('../partials/userHeader.ejs') %>
+<% } %>
+
+<% if (typeof userAlertmsg !== 'undefined') { %>
+    <div class="message-box" id="alertmsgID"><%= userAlertmsg %></div>
+<% } %>
+
+<!-- Page Banner Section Start -->
+<div class="page-banner-section section bg-image" style="height: 100px; background-color: rgb(226, 226, 226);">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <!-- Add content if needed -->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Page Banner Section End -->
+
+<!-- Checkout section start -->
+<div class="checkout-section section pt-90 pt-lg-70 pt-md-60 pt-sm-50 pt-xs-40 pb-70 pb-lg-50 pb-md-40 pb-sm-30 pb-xs-20">
+    <div class="order-confirmed-section">
+        <div class="container">
+          <div class="row">
+            <div class="col-12">
+      
+              <div class="order-confirmed-box">
+                <h3>Your order has been confirmed!</h3>
+      
+                <p>
+                  Thank you for your order, <span class="user-name"><%=userData.name%></span>.
+                  Your order will be shipped within 2 business days.
+                </p>
+      
+                <div class="order-details">
+                  <h4>Order Details</h4>
+      
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <% orderedCartItems.forEach(function(product, index) { %>
+                            <td><%=product.prod_id.productname%></td>
+                            <td><%=product.qty%></td>
+                            <td>₹<%=product.total_price%></td>
+                          </tr>
+                            <% }) %>
+                      <tr>
+                      
+                     
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <th colspan="2">Total</th>
+                        <th>₹<%=orderBill%></th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+      
+                <div class="shipping-address">
+                  <h4>Shipping Address</h4>
+      
+                  <p>  <strong><%= item.name %></strong>  <br> 
+                    <%= item.address %>, <%= item.landmark %> <br>
+                    <%= item.district %> District-<%= item.pincode %>,<%= item.state %></p>
+                </div>
+      
+                <div class="payment-information">
+                  <h4>Payment Information</h4>
+      
+                  <p>
+                    <span class="payment-method"><%=paymentMode%></span>
+                  </p>
+                </div>
+      
+                <div class="order-actions">
+                    <a href="/shop" class="btn btn-primary">Continue shopping</a>
+                  <a href="/user-orders" class="btn btn-primary">View Orders</a>
+                </div>
+              </div>
+      
+            </div>
+          </div>
+        </div>
+      </div>
+      
+</div>
+<!-- Checkout section end -->
+
+<%- include('partials/userFooter.ejs') %>

@@ -1,0 +1,206 @@
+
+<% if (typeof user !== 'undefined') { %>
+    <%- include('../partials/userLoggedHeader.ejs') %>
+    <% } else { %>
+        <%- include('../partials/userHeader.ejs') %>
+        <% } %>
+
+        
+<% if (typeof userAlertmsg !== 'undefined') { %>
+    <div class="message-box" id="alertmsgID"><%= userAlertmsg %></div>
+<% } %>
+
+
+         <!-- Page Banner Section Start -->
+ <div class="page-banner-section section bg-image" style="height: 100px;background-color: rgb(226, 226, 226);"></div>
+<!-- Page Banner Section End -->   
+
+        <!--My Account section start-->
+        <div class="my-account-section section pt-90 pt-lg-70 pt-md-60 pt-sm-50 pt-xs-45  pb-100 pb-lg-80 pb-md-70 pb-sm-60 pb-xs-50" >
+            <div class="container" id="address">
+                <div class="row">
+
+                    <div class="col-12">
+                        <div class="row">
+                            <!-- My Account Tab Menu Start -->
+                            <%- include('../partials/profileSidebar.ejs') %>
+                            <!-- My Account Tab Menu End -->
+
+                            <!-- My Account Tab Content Start -->
+                            <div class="col-lg-9 col-12">
+                                <div class="tab-content" id="myaccountContent">
+                                                                       <!-- Single Tab Content Start -->
+                                    <div  id="address-edit" >
+                                        <div class="myaccount-content">
+
+                                            <h3 style="font-weight: 100;">Manage Addresses</h3>
+
+                                              <!-- Add New Address Button -->
+                                            <div id="add-new-address-container" style="width: auto;height: auto;border: 1px solid black;padding: 20px;margin-bottom: 20px;">
+                                                <a href="#"  id="add-address-btn" >
+                                                    <i class="fa fa-plus"></i> Add New Address
+                                                </a>
+
+                                                  <!-- New Address Form (Initially Hidden) -->
+                                            <div id="new-address-form" class="new-address-form" style="display: none;">
+                                                <h4>Add a new address</h4>
+                                                <form action="/add-new-address?id=<%=userData._id%>" method="post">
+                                                    <!-- Address input fields go here -->
+                                                    <div class="col-lg-6 col-12 mb-30">
+                                                        <label for="address-name">Name:</label>
+                                                        <input type="text" name="name" id="address-name" >
+                                                    </div>
+
+                                                    <div class="col-lg-6 col-12 mb-30">
+                                                        <label for="address-mobile">Mobile:</label>
+                                                        <input type="text" name="mobile" id="address-mobile" >
+                                                    </div>
+
+                                                    <div class="col-lg-6 col-12 mb-30">
+                                                        <label for="address-pincode">pincode:</label>
+                                                        <input type="text" name="pincode" id="address-pincode" >
+                                                    </div>
+
+                                                    <div class="col-lg-6 col-12 mb-30">
+                                                        <label for="address-address">Address:</label>
+                                                        <input type="text" name="address" id="address-address" >
+                                                    </div>
+
+                                                    <div class="col-lg-6 col-12 mb-30">
+                                                        <label for="address-district">District:</label>
+                                                        <input type="text" name="district" id="address-district" >
+                                                    </div>
+
+                                                    <div class="col-lg-6 col-12 mb-30">
+                                                        <label for="address-state">State:</label>
+                                                        <input type="text" name="state" id="address-state" >
+                                                    </div>
+
+                                                    <div class="col-lg-6 col-12 mb-30">
+                                                        <label for="address-landmark">Landmark:</label>
+                                                        <input type="text" name="landmark" id="address-landmark" >
+                                                    </div>
+
+                                                    <div class="col-lg-6 col-12 mb-30">
+                                                        <label for="address-alternativeNumber">Alternative Phone:</label>
+                                                        <input type="text" name="AlternativeNumber" id="address-alternativeNumber" >
+                                                    </div>
+
+                                                    <button type="submit" id="save-address-btn" class="save-change-btn">Save</button>
+                                                    <button id="cancel-address-btn" class="save-change-btn">Cancel</button>
+                                                </form>
+                                            </div>
+                                            </div>
+                                             
+                                    
+                                          
+                                            <h4 style="text-decoration: underline;">Saved Address</h4>
+
+                                            <div id="saved-address">
+
+                                                <% if (userProfileData.address.length > 0) { %>
+                                                    <% userProfileData.address.forEach(function(item) { %>
+
+                                                        <div class="address-box">
+                                                            <address id="adress-box2">
+                                                              <p><strong><%=item.name%>  <%=item.mobile%></strong></p>
+                                                              <p><%=item.address%>, <%=item.landmark%>, <%=item.district%>, <%=item.state%>, <%=item.pincode%></p>
+                                                              
+                                                            
+                                                        
+                                                                 <!-- Three dots dropdown button -->
+                                                                <div class="dropdown">
+                                                                    <button class="dropbtn">&#8226;&#8226;&#8226;</button>
+                                                                    <div class="dropdown-content">
+                                                                    <a href="#">Edit</a>
+                                                                    <a href="/user-profile/delete-address?id=<%=userData._id%>&addressId=<%=item._id%>">Delete</a>
+                                                                    </div>
+                                                                </div>
+                                                            </address>
+                                                                <div id="edit-address-form" style="display: none;">
+                                                                    <h4>Edit address</h4>
+                                                                    <form class="editAddressFormControl" action="/edit-address?id=<%=userData._id%>&addressId=<%=item._id%>" method="post">
+                                                                        <!-- Address input fields go here -->
+                                                                        <div class="col-lg-6 col-12 mb-30">
+                                                                            <label for="address-name">Name:</label>
+                                                                            <input type="text" name="name" id="edit-address-name" class="form-control">
+                                                                        </div>
+                    
+                                                                        <div class="col-lg-6 col-12 mb-30">
+                                                                            <label for="address-mobile">Mobile:</label>
+                                                                            <input type="text" name="mobile" id="edit-address-mobile" class="form-control">
+                                                                        </div>
+                    
+                                                                        <div class="col-lg-6 col-12 mb-30">
+                                                                            <label for="address-pincode">pincode:</label>
+                                                                            <input type="text" name="pincode" id="edit-address-pincode" class="form-control">
+                                                                        </div>
+                    
+                                                                        <div class="col-lg-6 col-12 mb-30">
+                                                                            <label for="address-address">Address:</label>
+                                                                            <input type="text" name="address" id="edit-address-address" class="form-control">
+                                                                        </div>
+                    
+                                                                        <div class="col-lg-6 col-12 mb-30">
+                                                                            <label for="address-district">District:</label>
+                                                                            <input type="text" name="district" id="edit-address-district" class="form-control">
+                                                                        </div>
+                    
+                                                                        <div class="col-lg-6 col-12 mb-30">
+                                                                            <label for="address-state">State:</label>
+                                                                            <input type="text" name="state" id="edit-address-state" class="form-control">
+                                                                        </div>
+                    
+                                                                        <div class="col-lg-6 col-12 mb-30">
+                                                                            <label for="address-landmark">Landmark:</label>
+                                                                            <input type="text" name="landmark" id="edit-address-landmark" class="form-control">
+                                                                        </div>
+                    
+                                                                        <div class="col-lg-6 col-12 mb-30">
+                                                                            <label for="address-alternativeNumber">Alternative Phone:</label>
+                                                                            <input type="text" name="AlternativeNumber" id="edit-address-alternativeNumber" class="form-control">
+                                                                        </div>
+                    
+                                                                        <button type="submit" id="save-address-btn" class="save-change-btn">Save</button>
+                                                                        <button id="cancel-address-btn2" class="save-change-btn">Cancel</button>
+                                                                    </form>
+                                                                </div>
+                                                        </div>
+
+                                                        <% }); %>
+                                                        <% } else { %>
+                                                        <h4>No address found</h4>
+                                                        <% } %>
+
+                                                
+
+                                            </div>
+                                        </div>
+
+                                            
+                                        </div>
+                                    </div>
+                                    <!-- Single Tab Content End -->
+                
+                                    
+                                </div>
+                            </div>
+                            <!-- My Account Tab Content End -->
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!--My Account section end-->
+        <%- include('partials/userFooter.ejs') %>
+
+
+    <script>
+    //add new address 
+
+
+
+
+        </script>

@@ -1,0 +1,138 @@
+
+<% if (typeof user !== 'undefined') { %>
+    <%- include('../partials/userLoggedHeader.ejs') %>
+    <% } else { %>
+        <%- include('../partials/userHeader.ejs') %>
+        <% } %>
+
+
+        <!-- Page Banner Section Start -->
+ <div class="page-banner-section section bg-image" style="height: 100px;background-color: rgb(226, 226, 226);">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+
+               
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Page Banner Section End -->   
+        <!--Login Register section start-->
+        <div class="login-register-section section pt-90 pt-lg-70 pt-md-60 pt-sm-55 pt-xs-45  pb-70 pb-lg-50 pb-md-40 pb-sm-30 pb-xs-20">
+            <div class="container">
+                <div class="row">
+                    <!--Login Form Start-->
+                    <div class="col-md-6 col-sm-6">
+                        <div class="customer-login-register">
+                            <div class="form-login-title">
+                                <h2>Sign up</h2>
+                            </div>
+                            
+                            <% if (userAlertmsg) { %>
+                                <div class="message-box" id="alertmsgID"><%= userAlertmsg %></div>
+                            <% } %>
+                            
+                            
+                            <div class="login-form">
+                                <form action="/signup"  id="signupForm" method="post">
+
+                                    <!--name input-->
+                                    <div class="form-fild">
+                                        <p><label>Name <span class="required">*</span></label></p>
+                                        <input name="name" id="name" value="" type="text">
+
+                                        <div class="error" id="nameErr"></div>
+                                    </div>
+
+                                    <!--email input-->
+                                    <div class="form-fild">
+                                        <p><label>Email <span class="required">*</span></label></p>
+                                        <input name="email" id="email" value="" type="text">
+                                        <div class="error" id="emailErr"></div>
+                                    </div>
+
+                                    <!--mobile number input-->
+                                    <div class="form-fild">
+                                        <p><label>Mobile Number <span class="required">*</span></label></p>
+                                        <input name="mobile" id="mobile" value="" type="text">
+                                        <div class="error" id="mobileErr"></div>
+                                    </div>
+
+                                     <!--password input-->
+                                    <div class="form-fild">
+                                        <p><label>Password <span class="required">*</span></label></p>
+                                        <input name="password" id="password" value="" type="password">
+                                        <div class="error" id="passErr"></div>
+                                    </div>
+
+                                     <!--confirm password input-->
+                                    <div class="form-fild">
+                                        <p><label>Confirm Password <span class="required">*</span></label></p>
+                                        <input name="cpassword" id="cpassword" value="" type="password">
+                                        <div class="error" id="cPassErr"></div>
+                                    </div>
+
+                                    <div>
+                                        <span>Send OTP to: </span>
+                                        <div class="form-check form-check-inline" >
+                                            <input class="form-check-input" type="radio" name="sendOTP" id="inlineRadio1" value="email" >
+                                            <label class="form-check-label" for="inlineRadio1">Email</label>
+                                          </div>
+                                          <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="sendOTP" id="inlineRadio2" value="mobile" >
+                                            <label class="form-check-label" for="inlineRadio2">mobile number</label>
+                                           
+                                          </div>
+                                          <div class="error" id="rbtnErr"></div>
+                                       </div>
+                                       <br>
+                                    <div class="login-submit">
+                                        <button type="submit" class="btn">Sign up</button>
+                                    </div>
+                                    <div><a href="/signin">have an account? Log in</a></div>
+
+                                   
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!--Login Form End-->
+                   
+                </div>
+            </div>
+        </div>
+        <!--Login Register section end-->
+
+<!--Script for signup form validation-->
+
+<script>
+
+const signupForm = document.getElementById('signupForm');
+
+//attach an event listener to the form's submit event
+signupForm.addEventListener('submit', function (event) {
+
+    //prevent the default form submission
+    event.preventDefault();
+
+    //Call the signupValidation function 
+    const isValid = signupValidate();
+
+    //if validation fails , do not submit the form 
+    if(!isValid){
+        return false;
+    }
+
+      // If validation passes, you can manually submit the form
+  // This will trigger the actual form submission to /register
+  signupForm.submit();
+
+});
+
+</script>       
+
+
+<%- include('partials/userFooter.ejs') %>

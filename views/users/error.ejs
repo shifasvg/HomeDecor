@@ -1,0 +1,48 @@
+
+<% if (typeof user !== 'undefined') { %>
+    <%- include('../partials/userLoggedHeader.ejs') %>
+    <% } else { %>
+        <%- include('../partials/userHeader.ejs') %>
+        <% } %>
+
+        
+<% if (typeof userAlertmsg !== 'undefined') { %>
+    <div class="message-box" id="alertmsgID"><%= userAlertmsg %></div>
+<% } %>
+ <!-- Page Banner Section Start -->
+ <div class="page-banner-section section bg-image" style="height: 100px;background-color: rgb(226, 226, 226);">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+
+                <div class="page-banner text-start">
+                   
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Page Banner Section End -->
+<!-- 404 Error Section Start -->
+<div class="404-error-section section pt-90 pt-lg-70 pt-md-60 pt-sm-50 pt-xs-45 pb-100 pb-lg-80 pb-md-70 pb-sm-60 pb-xs-50">
+    <div class="container">
+        <div class="row">
+            
+            <div class="col-md-6">
+                <div class="error-wrapper text-center">
+                    <div class="error-text">
+                        <h1>404</h1>
+                        <h2>Opps! PAGE NOT BE FOUND</h2>
+                        <p>Sorry but the page you are looking for does not exist, have been removed, name changed or is temporarity unavailable.</p>
+                    </div>
+                    <div class="error-button">
+                        <a href="/">Back to home page</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 404 Error Section End -->
+<%- include('partials/userFooter.ejs') %>

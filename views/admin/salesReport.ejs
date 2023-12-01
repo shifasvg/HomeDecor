@@ -1,0 +1,70 @@
+<%- include('partials/adminHeader.ejs') %>
+
+<% if (typeof adminAlertmsg !== 'undefined') { %>
+  <div class="message-box" id="alertmsgID"><%= adminAlertmsg %></div>
+<% } %>
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+
+        <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+          <h6 class="text-left mb-0">Orders</h6>
+        </div>
+
+        
+        <div class="card-body px-0 pt-0 pb-2">
+          <div class="table-responsive p-0">
+            <table class="table table-hover text-center">
+              <thead style="background-color: rgba(128, 128, 128, 0.788); color: white;">
+                <tr style="color: black;">
+                  
+                  <th>Image</th>
+                  <th>Product name</th>
+                  <th>order id</th>
+                  <th>Quantity</th>
+                  <th>total Price</th>
+                  <th>Status</th>
+                  <th>Payment Mode</th>
+                  <th>Order date</th>
+                  <th>Total bill</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (orders.length > 0) { %>
+                  <% orders.forEach((order) => { %>
+                    <% order.items.forEach((item,index) => { %>
+                      <tr>
+                     
+                        <td>
+                          <img src="/images/<%= item.images %>" class="img-fluid product-image-admin" style="max-width: 100px; height: auto; border-radius: 4px;">
+                        </td>
+                        <td><%=item.productname%></td>
+                        <td><%= item._id %></td>
+                        <td><%= item.quantity %></td>
+                        <td><%= item.bill %></td>
+                        <td><%= item.orderStatus %></td>
+                        <td><%= order.paymentMode %></td>
+                        <td><%= formatDate(order.orderDate) %></td>
+                        <td>₹ <%= order.orderBill %></td>
+                        
+                        
+                      </tr>
+                    <% }); %>
+                  <% }); %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="8"> NO orders Found</td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/adminFooter.ejs') %>

@@ -1,0 +1,31 @@
+<%- include('partials/adminHeader.ejs') %>
+
+<% if (adminAlertmsg) { %>
+  <div class="message-box" id="alertmsgID"><%= adminAlertmsg %></div>
+<% } %>
+
+ <!-- Form to edit category -->
+
+    <div class="row justify-content-center align-items-center" style=" height: 85vh;">
+      <div class="col-6 centered-div">
+        <div class="card mb-4">
+          <div class="card-header pb-0">
+            <h6 class="text-left">Edit Category</h6>
+          </div>
+          <div class="card-body px-0 pt-0 pb-0">
+            <div class="table-responsive p-3">
+              <form action="/admin/category-management/edit-category?id=<%=categoryidtoedit%>" class="form-group" method="post">
+                  <label for="">New category name</label>
+                  <input type="text" class="form-control" name="categoryUpdate" value="<%=catname%>">
+                  <br>
+                  <button type="submit" class="btn btn-primary">Update</button>
+                  <button type="button" class="btn btn-primary"><a href="/admin/category-management" style="color: white;">Cancel</a></button>
+                </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+</div>
+<%- include('partials/adminFooter.ejs') %>

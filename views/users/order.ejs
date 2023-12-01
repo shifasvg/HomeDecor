@@ -1,0 +1,111 @@
+
+<% if (typeof user !== 'undefined') { %>
+    <%- include('../partials/userLoggedHeader.ejs') %>
+    <% } else { %>
+        <%- include('../partials/userHeader.ejs') %>
+        <% } %>
+
+        
+<% if (typeof userAlertmsg !== 'undefined') { %>
+    <div class="message-box" id="alertmsgID"><%= userAlertmsg %></div>
+<% } %>
+
+
+         <!-- Page Banner Section Start -->
+ <div class="page-banner-section section bg-image" style="height: 100px;background-color: rgb(226, 226, 226);"></div>
+<!-- Page Banner Section End -->   
+
+        <!--My Account section start-->
+        <div class="my-account-section section pt-90 pt-lg-70 pt-md-60 pt-sm-50 pt-xs-45  pb-100 pb-lg-80 pb-md-70 pb-sm-60 pb-xs-50" >
+            <div class="container" id="address">
+                <div class="row">
+
+                    <div class="col-12">
+                        <div class="row">
+                            <!-- My Account Tab Menu Start -->
+                            <%- include('../partials/profileSidebar.ejs') %>
+                            <!-- My Account Tab Menu End -->
+
+                            <!-- My Account Tab Content Start -->
+                            <div class="col-lg-9 col-12">
+                                <div class="tab-content" id="myaccountContent">
+                                    
+                                    </div>
+                                    <!-- Single Tab Content End -->
+                                    <h3>Orders</h3>
+
+                                    <div class="myaccount-table table-responsive text-center">
+                                        <table class="table " style="text-align: left;">
+                                            <thead class="thead-light">
+                                                <th>#</th>
+                                                <th>image</th>
+                                                <th>Product name</th>
+                                                <th>Total</th>
+                                                <th>Status</th>
+                                                <th>Date</th>
+                                                <th>Action</th>
+                                            </thead>
+
+                                            <tbody>
+
+                                                
+
+                                                <% orderedProducts.forEach(function(order, index) { %>
+                                                    <% order.items.forEach(function(item, itemIndex) { %>
+                                                        <tr>
+                                                            <td><%=index +1 %></td>
+                                                            <td><a href="/product-view?id=<%=item.productId%>" style="color: black;"><img src="/images/<%=item.images%>" alt=""  style="max-width: 100px; height: 100px;border-radius: 4px;"></a></td>
+                                                            <td><%= item.productname %></td>
+                                                            <td><%= item.productTotal %></td>
+                                                            <td><%item.orderStatus%></td>
+                                                            <td><%= order.orderDate.toLocaleDateString() %></td>
+                                                            <td><a href="/orderProductDetails?orderedPrdid=<%=item._id%>&orderCartProductsId=<%= order._id%>"><button class="btn btn-primary btn-sm rounded-pill">View</button></a></td>
+
+
+                                                            <!-- <td>
+                                                                <p style="text-align: left;">
+                                                                    <%= order.address.name %> <br>
+                                                                    <%= order.address.address %>, <%= order.address.landmark %> <br>
+                                                                    <%= order.address.district %>, <%= order.address.state %>, <%= order.address.pincode %> <br>
+                                                                    <%= order.address.mobile %>
+                                                                </p>
+                                                            </td> -->
+                                                            <!-- <td><%= order.paymentMode %></td>
+                                                            <td><%= item.orderStatus %></td> -->
+                                                           
+                                            
+                                                            <!-- <% if (item.orderStatus == 'Cancelled') { %>
+                                                                <td>Order has been cancelled</td>
+                                                            <% } else if (item.orderStatus == 'Confirmed' || item.orderStatus == 'Order placed' || item.orderStatus == 'Shipped') { %>
+                                                                <td><button type="button" class="btn" onclick="cancel('<%= item._id %>','<%= order.paymentMode %>','<%= item.quantity * item.price %>')">Cancel</button></td>
+                                                            <% }else if (item.orderStatus == 'Delivered') { %>
+                                                                <td><button type="button" class="btn" onclick="returnOrder('<%= item._id %>')">Return</button></td>
+                                                                <%}else if (item.orderStatus == 'Return initiated'){%>
+                                                                    <td>Return has bee initiated <br> refund will be initiate <br> after seller accept the return</td>
+                                                                    <%}%> -->
+
+                                                            
+                                                        </tr>
+                                                    <% }); %>
+                                                <% }); %>
+                                            </tbody>
+                                            
+                                            
+                                        </table>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <!-- My Account Tab Content End -->
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!--My Account section end-->
+        <%- include('partials/userFooter.ejs') %>
+
+
+    

@@ -1,0 +1,121 @@
+<%- include('partials/adminHeader.ejs') %>
+
+<% if (adminAlertmsg) { %>
+  <div class="message-box" id="alertmsgID"><%= adminAlertmsg %></div>
+<% } %>
+
+
+<!-- add products -->
+<div class="container-fluid py-4" id="addNewProduct">
+<div class="row">
+    <div class="col-10" >
+      <div class="card mb-4" style=" border: 1px solid #d8d8d8;margin-left: 3%;">
+        <div class="card-header pb-0">
+          <h6 class="text-left">Add product</h6>
+        </div>
+        <div class="card-body px-0 pt-0 pb-0">
+          <div class="table-responsive p-3">
+            <form action="#" class="form-group" method="post" enctype="multipart/form-data" id="addProductsForm">
+  
+               <div class="form-fild">
+                <label for="">Product name</label>
+                <input type="text" class="form-control" name="productname" id="product_name" data-productNames="<%=productNames%>">
+                <div class="error" id="addPrdNameErr"></div>
+               </div>
+
+                <div class="row mb-3">
+                  <div class="col">
+                    <label for="">Price</label>
+                    <input type="text" class="form-control" name="price" id="product_price" placeholder="Rs." >
+                    <div class="error" id="addPrdPriceErr"></div>
+                  </div>
+
+                  <div class="col">
+                    <label for="">MRP</label>
+                    <input type="text" class="form-control" name="mrp" id="product_mrp" placeholder="Rs." >
+                    <div class="error" id="addPrdMrpErr"></div>
+                  </div>
+
+                  <div class="col">
+                    <label for="">Discount</label>
+                <input type="text" class="form-control" name="discount" id="product_discount" readonly> 
+                  </div>
+                </div>
+                
+                <div class="form-fild">
+                  <label for="">Stock</label>
+                <input type="number" class="form-control" name="stock" style="width: 32%;" id="product_stock" value="0"  >
+                <div class="error" id="addPrdStockErr"></div>
+                </div>
+                
+                
+                 <div class="form-outline mb-4 mt-4">
+                  <select name="category" class="form-control form-control-lg border-dark" id="product_category" required>
+                    <option>choose the category</option>
+                    <% if(categories) { %>
+                    <% categories.forEach(function(category) { %>
+                    <option value="<%= category._id %>"><%= category.categoryName %></option>
+                    <% }); %>
+                    <% } else { %>
+                      <option value="">No category available</option>
+                    <% } %>
+                  </select>
+                  <div class="error" id="addPrdCatErr"></div>
+                </div>
+
+                <div class="form-fild">
+                  <label for="">Description</label>
+                  <textarea class="form-control" name="description" id="product_desc" rows="5"></textarea>
+                  <div class="error" id="addPrdDescErr"></div>
+                </div>
+
+  
+               <!-- images drag and drop -->
+
+               <div class="boxcard">
+                    <div class="top">
+                        <p>Drag & drop image</p>
+                    </div>
+
+                    <div class="dragbox dragover">
+                    <span class="inner">Drag & drop image here or <span class="select">Browse</span></span>
+                    <input name="file" type="file" class="file" multiple />
+                    </div>
+
+                    <div class="boxcontainer">
+                      
+                    </div>
+
+                    <!-- <div class="cropcontainer" id="cropcontainer">
+                      <div>
+                        <img src="" alt="">
+                      </div>
+                      <img src="" alt="" id="output">
+                    </div> -->
+
+                    <div class="error" id="addPrdImgErr"></div>
+               </div>
+
+               
+               
+           
+  
+  <br>
+                <button type="submit" class="btn btn-primary">Add product</button>
+                <button type="button" class="btn btn-primary"><a href="/admin/products-management" style="color: white;">Cancel</a></button>
+              </form>
+          </div>
+        </div>
+      </div>
+
+
+
+
+<script>
+
+
+
+
+
+</script>
+      <%- include('partials/adminFooter.ejs') %>  

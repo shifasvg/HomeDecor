@@ -1,0 +1,176 @@
+
+<% if (typeof user !== 'undefined') { %>
+    <%- include('../partials/userLoggedHeader.ejs') %>
+    <% } else { %>
+        <%- include('../partials/userHeader.ejs') %>
+        <% } %>
+
+        
+<% if (typeof userAlertmsg !== 'undefined') { %>
+    <div class="message-box" id="alertmsgID"><%= userAlertmsg %></div>
+<% } %>
+
+
+         <!-- Page Banner Section Start -->
+ <div class="page-banner-section section bg-image" style="height: 100px;background-color: rgb(226, 226, 226);"></div>
+<!-- Page Banner Section End -->   
+
+        <!--My Account section start-->
+        <div class="my-account-section section pt-90 pt-lg-70 pt-md-60 pt-sm-50 pt-xs-45  pb-100 pb-lg-80 pb-md-70 pb-sm-60 pb-xs-50" >
+            <div class="container" id="address">
+                <div class="row">
+
+                    <div class="col-12">
+                        <div class="row">
+                            <!-- My order Tab Menu Start -->
+                            <%- include('../partials/profileSidebar.ejs') %>
+                            <!-- My order Tab Menu End -->
+
+                            <!-- My order product details Content Start -->
+                            <div class="col-lg-9 col-12">
+                             <div class="orderProductAddressContainer">
+                                <h3 class="boldaddress">Delivery Address</h3>
+                                <h4 class="boldaddress"><%=orderedPrd.address.name%></h4>
+                                <p><%=orderedPrd.address.address%>,<%=orderedPrd.address.landmark%> <br> 
+                                    <%=orderedPrd.address.district%>-<%=orderedPrd.address.pincode%>, <%=orderedPrd.address.state%></p>
+                                <h4  class="boldaddress">Phone number</h4>
+                                <p><%=orderedPrd.address.mobile%>,<% if(typeof orderedPrd.address.altr_number != 'undefined'){%>
+                                    <%=orderedPrd.address.altr_number%>
+                                    <%}%></p>
+                             </div>
+
+                             <div class="orderedProductDetailsContainer">
+                               <div> <img src="/images/<%=product.images%>" alt="product img"></div>
+
+                               <div class="orderedPrdDetails">
+                                <h3><%=product.productname%> </h3>
+                                <p style="font-weight: 600;">RS.<%=product.price%></p>
+                                <p>Payment Mode : <%=orderedPrd.paymentMode%></p>
+                               </div>
+                           
+                               <div class="orderedPrdDetails">
+                               <p style="display: inline;">Order status:</p>
+                               <%if(product.orderStatus == 'Cancelled by customer' || product.orderStatus == 'Cancelled by seller'){%>
+                                <p>Order Cancelled</p>
+                                <%}else{%>
+                                <p><%=product.orderStatus%></p>
+                               <%}%>
+                               </div>
+
+                               <div class="orderedPrdDetails">
+
+                                <% if (product.orderStatus == 'Cancelled by seller') { %>
+                                    <p style="font-weight: 700;">Order has been cancelled by seller</p>
+                                    <%}else if(product.orderStatus == 'Cancelled by customer'){%>
+                                        <p style="font-weight: 700;">Order has been cancelled</p>
+                                    <% } else if (product.orderStatus == 'Confirmed' || product.orderStatus == 'Order placed' || product.orderStatus == 'Shipped') { %>
+                                        <p>Do you want to cancel?</p>
+                                    <button type="button" class="btn" onclick="cancel('<%= product._id %>','<%= orderedPrd.paymentMode %>','<%= product.quantity * product.price %>')">Cancel</button>
+                                    <% }else if (product.orderStatus == 'Delivered') { %>
+                                    <button type="button" class="btn" onclick="returnOrder('<%= product._id %>')">Return</button>
+                                    <%}else if (product.orderStatus == 'Return initiated'){%>
+                                    <p>Return has bee initiated <br> refund will be initiate <br> after seller accept the return</p>
+                                    <%}%> 
+
+                               </div>
+
+                             </div>
+                
+                                    
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!--My Account section end-->
+        <%- include('partials/userFooter.ejs') %>
+
+
+        <script>
+            //cancel order
+            function cancel(data, paymentMethod, refundAmount){
+                console.log("cancel working");
+                const id = data;
+                const MOP = paymentMethod;
+                const refund = refundAmount;
+                if(MOP == "Cash on delivery"){
+                    Swal.fire({
+                        title:"Are you sure?",
+                        text:"Do you want to cancel this order!",
+                        icon:"warning",
+                        showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonText: 'No, keep it',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, cancel it!'
+                    }).then((result) => {
+                if (result.isConfirmed) {
+                  fetch("/cancelOrder", {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json"
+                      },
+                      body: JSON.stringify({
+                        id: id,
+                        mop: MOP,
+                        refund: refund
+                      })
+                    })
+                    .then(response => {
+                      return response.json();
+                    })
+                    .then(data => {
+                        console.log("Cancellation success data", data);
+                      Swal.fire(
+                        'Cancelled!',
+                        'Your Order has been cancelled.',
+                        'success'
+                      )
+                    })
+                    .catch(error => {
+                      console.log(error);
+                    });
+                  location.reload();
+                }
+        
+              })
+                }
+            }
+        
+            function returnOrder(itemId){
+                const id = itemId;
+                Swal.fire({
+                        title:"Are you sure?",
+                        text:"Do you want to return this order!",
+                        icon:"warning",
+                        showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonText: 'No, keep it',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, return it!'
+                    }).then((result) => {
+                if (result.isConfirmed) {
+                  fetch(`/returnOrder/${id}`, {
+                      method: "PATCH",  
+                    })
+                    .then(data => {
+                        console.log("Cancellation success data", data);
+                        location.reload()
+                    })
+                    .catch(error => {
+                      console.log(error);
+                    });
+                  location.reload();
+                }
+        
+              })
+            }
+        
+        
+        
+                </script>

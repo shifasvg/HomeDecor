@@ -1,0 +1,91 @@
+<%- include('partials/adminHeader.ejs') %>
+
+
+<% if (typeof adminAlertmsg !== 'undefined') { %>
+    <div class="message-box" id="alertmsgID"><%= adminAlertmsg %></div>
+  <% } %>
+  
+  <div class="container-fluid py-4">
+    <div class="row">
+      <div class="col-12">
+        <div class="card mb-4">
+  
+          <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+            <h6 class="text-left mb-0">Products</h6>
+            <button class="btn " style="border: 1px solid rgb(184, 184, 184);"><a href="/admin/products-management/add-new-product">Add new product</a></button>
+        </div>
+        
+          <div class="card-body px-0 pt-0 pb-2">
+            <div class="table-responsive p-0">
+              <table class="table table-hover text-center">
+                <thead style="background-color: rgba(128, 128, 128, 0.788); color: white;">
+                  <tr style="color: black;">
+                    <th class="text-left">#</th>
+                    <th>Product image</th>
+                    <th >Product name</th>
+                    <th >Price</th>
+                    <th >MRP</th>
+                    <th >Product Category</th>
+                    <th >Stock</th>
+                    <!-- <th class="text-left">Rating</th> -->
+                    <th >Option</th>
+                  </tr>
+                </thead>
+               <tbody>
+                
+                  
+                  <% if(products.length > 0) { %>
+                    <% products.forEach(function(product, index) { %>
+                      <tr>
+                    <td><%= index + 1 %></td>
+  
+                    <td>
+                      <img src="/images/<%= product.images[0].filename %>" class="img-fluid product-image-admin" style="max-width: 100px; height: auto;border-radius: 4px;">
+                    </td>
+  
+                  <td ><%= product.productname %></td>
+                  
+                  <td>Rs.<%= product.price %></td>
+  
+                  <td>Rs.<%= product.mrp %></td>
+  
+                  
+                  <td>
+                    <%= product.category.categoryName %>
+                    <% if (product.category.isDeleted) { %>
+                      <h6 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 10px;">This category has been deleted!<br>If you wish, you can edit the product.</h6>
+                    <% } else if (!product.category.active) { %>
+                      <h6 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 10px;">This category is deactivated now.</h6>
+                    <% } %>
+                  </td>
+                  
+  
+                  <td><%= product.stock%></td>
+  
+  
+  
+                  <td>
+                    <a href="/admin/products-management/edit-product?id=<%= product._id %>" class="btn btn-blue p-2" >Restore</a>
+                    <!-- <a href="/admin/products-management/delete?id=<%= product._id %>" class="btn btn-danger p-2" onclick="confirmProductDelete('<%= product._id %>')">Delete</a> -->
+                    <button class="btn btn-danger p-2" onclick="confirmProductDelete('<%= product._id %>')">Delete premenentaly</button>
+                  </td>
+                  <% }) %>
+  
+                  <% } else { %>
+                    <tr>
+                      <td colspan="7">Products Not Found</td>
+                    </tr>
+                  <% } %>
+  
+               </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+
+<%- include('partials/adminFooter.ejs') %>  

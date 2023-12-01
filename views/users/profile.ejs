@@ -1,0 +1,162 @@
+
+<% if (typeof user !== 'undefined') { %>
+    <%- include('../partials/userLoggedHeader.ejs') %>
+    <% } else { %>
+        <%- include('../partials/userHeader.ejs') %>
+        <% } %>
+
+        
+<% if (typeof userAlertmsg !== 'undefined') { %>
+    <div class="message-box" id="alertmsgID"><%= userAlertmsg %></div>
+<% } %>
+
+
+         <!-- Page Banner Section Start -->
+ <div class="page-banner-section section bg-image" style="height: 100px;background-color: rgb(226, 226, 226);"></div>
+<!-- Page Banner Section End -->   
+
+        <!--My Account section start-->
+        <div class="my-account-section section pt-90 pt-lg-70 pt-md-60 pt-sm-50 pt-xs-45  pb-100 pb-lg-80 pb-md-70 pb-sm-60 pb-xs-50" >
+            <div class="container">
+                <div class="row">
+
+                    <div class="col-12">
+                        <div class="row">
+                            <!-- My Account Tab Menu Start -->
+                            <%- include('../partials/profileSidebar.ejs') %>
+                            <!-- My Account Tab Menu End -->
+
+                            <!-- My Account Tab Content Start -->
+                            <div class="col-lg-9 col-12">
+                                <div class="tab-content" id="myaccountContent">
+                                    <!-- Single Tab Content Start -->
+                                    <div  id="account-info" >
+                                        <div class="myaccount-content">
+                                            <h3>Account Details <button id="edit-btn" class="edit-btn" style="background-color: transparent; border: none; color: blue; margin-left: 20px; font-size: 20px; cursor: pointer;">Edit</button>
+
+                                            </h3>
+
+                                            <div class="account-details-form">
+                                                <form action="/user-edit-profile?id=<%=userData._id%>" method="post">
+                                                    <div class="row account-details-form1">
+                                                        <div class=" col-12 mb-30">
+                                                            <label for="">Name:</label>
+                                                            <input id="first-name" name="name" type="text" value="<%=userProfileData.name%>">
+                                                        </div>
+
+                                                        <div class="col-12 mb-30">
+                                                            <label for="">Mobile number:</label>
+                                                            <input id="display-name" name="mobile" type="text" value="<%=userProfileData.mobile%>">
+                                                        </div>
+
+                                                        <div class="col-12 mb-30">
+                                                            <label for="">Email:</label>
+                                                            <input id="email" type="email" name="email" value="<%=userProfileData.email%>">
+                                                        </div>
+
+                                                        <div class="col-12">
+                                                            <button type="submit" id="save-btn" class="save-change-btn" style="display: none;">Save</button>
+                                                            <button id="cancel-btn" class="save-change-btn" style="display: none;">Cancel</button>
+                                                        </div>
+
+                                                    </div>
+                                                </form>
+                                                <hr>
+                                                <form action="">
+                                                     <div class="col-12 mb-30">
+                                                            <h4>Password change</h4>
+                                                        </div>
+
+                                                        <div class="col-12 mb-30">
+                                                            <input id="current-pwd" placeholder="Current Password" type="password">
+                                                        </div>
+
+                                                        <div class="col-lg-6 col-12 mb-30">
+                                                            <input id="new-pwd" placeholder="New Password" type="password">
+                                                        </div>
+
+                                                        <div class="col-lg-6 col-12 mb-30">
+                                                            <input id="confirm-pwd" placeholder="Confirm Password" type="password">
+                                                        </div>
+
+                                                        <div class="col-12">
+                                                            <button class="save-change-btn">Save Changes</button>
+                                                        </div>
+
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Single Tab Content End -->
+                                  
+                                  
+
+                                   
+
+                                    
+
+                                    
+                                </div>
+                            </div>
+                            <!-- My Account Tab Content End -->
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!--My Account section end-->
+        <%- include('partials/userFooter.ejs') %>
+
+
+    <script>
+    //edit account details
+    document.addEventListener("DOMContentLoaded", function () {
+    const editBtn = document.getElementById("edit-btn");
+    const saveBtn = document.getElementById("save-btn");
+    const cancelBtn = document.getElementById("cancel-btn");
+    const inputFields = document.querySelectorAll(".account-details-form1 input");
+
+    // Function to toggle input field's disabled attribute
+    function toggleInputFields(disabled) {
+        inputFields.forEach((input) => {
+            input.disabled = disabled;
+        });
+    }
+
+    // Initial state: input fields are disabled, save and cancel buttons are hidden
+    toggleInputFields(true);
+    saveBtn.style.display = "none";
+    cancelBtn.style.display = "none";
+
+    // Edit button click event handler
+    editBtn.addEventListener("click", function () {
+        // Enable input fields and show save and cancel buttons
+        toggleInputFields(false);
+        saveBtn.style.display = "inline-block";
+        cancelBtn.style.display = "inline-block";
+        // Hide the edit button after clicking on it
+        editBtn.style.display = "none";
+    });
+
+    // Cancel button click event handler
+    cancelBtn.addEventListener("click", function () {
+        // Revert changes, disable input fields, and hide save and cancel buttons
+        inputFields.forEach((input) => {
+            input.value = input.defaultValue;
+        });
+        toggleInputFields(true);
+        saveBtn.style.display = "none";
+        cancelBtn.style.display = "none";
+        // Show the edit button after clicking on cancel
+        editBtn.style.display = "inline-block";
+    });
+
+});
+
+
+
+
+
+        </script>

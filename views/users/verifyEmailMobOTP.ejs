@@ -1,0 +1,84 @@
+
+<% if (typeof user !== 'undefined') { %>
+  <%- include('../partials/userLoggedHeader.ejs') %>
+  <% } else { %>
+      <%- include('../partials/userHeader.ejs') %>
+      <% } %>
+
+      
+<% if (typeof userAlertmsg !== 'undefined') { %>
+  <div class="message-box" id="alertmsgID"><%= userAlertmsg %></div>
+<% } %>
+
+
+<div class="login-register-section section pt-90 pt-lg-70 pt-md-60 pt-sm-55 pt-xs-45  pb-70 pb-lg-50 pb-md-40 pb-sm-30 pb-xs-20 otpbg">
+    <div class="container otpmain">
+        <div class="row">
+            <!--otp Form Start-->
+            <div class="col-md-6 col-sm-6">
+                <div class="customer-login-register">
+                    <div class="col-md-6 col-sm-6">
+                        <div class="otp-container">
+                            <h3>Enter OTP</h3>
+                            <h4>otp has sent to your <%= transporter %></h4>
+                            <form action="/verify-emailMob-otp" method="post">
+                                
+                                <!-- otp input -->
+                            <div>
+                                <input type="text" id="otp" name="otp" class="otp-input" maxlength="6" minlength="6" placeholder="Enter your OTP" required>
+                                <div class="error text-center" id="otpErr"></div>
+                            </div>
+                           
+                            <!-- go back link -->
+                            <br>
+                            <div>
+                                <h5 class="labels-verify">Edit your <%= transporter%>? <a href="/forgot-password">Go back</a></h5>
+                            </div>
+
+                            <!-- submit button -->
+                            <div>
+                                <button type="submit" class="otp-submit-button">Verify OTP</button>
+                            </div>
+                            </form>
+                            <div class="text-center mt-4">
+                                <span id="verifiBtn">
+                                  <button disabled="true" class="btn btn-blue border-dark curved" style="width: 70%;">
+                                    Resend OTP in <span class="timer"></span><span id="counter"></span>
+                                  </button>
+                                </span>
+                            
+                        </div>
+                        </div>
+                </div>
+            </div>
+            <!--Login Form End-->
+           
+        </div>
+    </div>
+</div>
+
+<script>
+    function countdown() {
+      let seconds = 59;
+      function tick() {
+        let counter = document.getElementById("counter");
+        seconds--;
+        counter.innerHTML =
+          "0:" + (seconds < 10 ? "0" : "") + String(seconds);
+        if (seconds > 0) {
+          setTimeout(tick, 1000);
+        } else {
+          // Change the button style here
+          const resendBtn = document.getElementById("verifiBtn");
+          resendBtn.innerHTML = `
+            <button type="submit" class="btn btn-primary btn-block border-dark curved" onclick="window.location.href='/resend-otp'" style="width: 50%;">Resend OTP</button>
+          `;
+          document.getElementById("counter").innerHTML = "";
+        }
+      }
+      tick();
+    }
+    countdown();
+  </script>
+
+<%- include('partials/userFooter.ejs') %> 

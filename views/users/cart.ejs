@@ -1,0 +1,205 @@
+<% if (typeof user !== 'undefined') { %>
+    <%- include('../partials/userLoggedHeader.ejs') %>
+    <% } else { %>
+        <%- include('../partials/userHeader.ejs') %>
+        <% } %>
+
+        
+<% if (typeof userAlertmsg !== 'undefined') { %>
+    <div class="message-box" id="alertmsgID"><%= userAlertmsg %></div>
+<% } %>
+
+ <!-- Page Banner Section Start -->
+ <div class="page-banner-section section bg-image" style="height: 100px;background-color: rgb(226, 226, 226);">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+
+                <div class="page-banner text-start">
+                    
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Page Banner Section End -->
+<!--Cart section start-->
+<div class="cart-section section pt-90 pt-lg-45 pt-md-60 pt-sm-50 pt-xs-45  pb-70 pb-lg-50 pb-md-40 pb-sm-30 pb-xs-20">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-12">
+                <!-- Cart Table -->
+                <div class="cart-table table-responsive mb-30">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="pro-thumbnail">Image</th>
+                                <th class="pro-title">Product</th>
+                                <th class="pro-price">Price</th>
+                                <th class="pro-quantity">Quantity</th>
+                                <th class="pro-subtotal">Total</th>
+                                <th class="pro-remove">Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (cart.length > 0) { %>
+                                <% cart.forEach(function(item) { %>
+                            <tr>
+                                <td class="pro-thumbnail"><a href="/product-view?id=<%=item.prod_id._id%>"><img src="images/<%=item.prod_id.images[0].filename %>" alt="Product"></a></td>
+                                <td class="pro-title"><a href="/product-view?id=<%=item.prod_id._id%>"><%= item.prod_id.productname %></a></td>
+                                <td class="pro-price"><span>₹<%= item.unit_price %></span></td>
+                                <td class="pro-quantity">
+                                    <div class="pro-qty">
+                                        <input type="number" value="<%= item.qty %>" data-product-id="<%= item.prod_id._id %>" data-product-stock="item.prod_id.stock"  onchange="updateCartItem('<%= item.prod_id._id %>', this.value)">
+                                    </div>
+                                </td>
+                                
+                                <td class="pro-subtotal"><span>₹<%= item.qty*item.unit_price %></span></td>
+                                <td class="pro-remove">
+                                    <a href="#" class="remove-item" data-product-id="<%= item.prod_id._id %>">
+                                        <i class="fa fa-trash-o"></i>
+                                    </a>
+                                </td>
+                                
+                            </tr>
+                            <% }); %>
+                            <% } else { %>
+                            <tr><td>No items found</td></tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-12 mb-5">
+                        
+                        <!-- Discount Coupon -->
+                        <div class="discount-coupon">
+                            <h4>Discount Coupon Code</h4>
+                            <form action="#">
+                                <div class="row">
+                                    <div class="col-md-6 col-12 mb-25">
+                                        <input type="text" placeholder="Coupon Code">
+                                    </div>
+                                    <div class="col-md-6 col-12 mb-25">
+                                        <button class="btn">Apply Code</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Cart Summary -->
+                    <div class="col-lg-6 col-12 mb-30 d-flex">
+                        <div class="cart-summary">
+                            <div class="cart-summary-wrap">
+                                <h4>Cart Summary</h4>
+                                <% let totalQuantity = 0; %>
+                                <% cart.forEach(function(item) { %>
+                                <% totalQuantity += item.qty; %>
+                                <% }); %>
+                                <p>Sub Total (<%= totalQuantity %> items) <span>₹<%=cartBill%></span></p>
+                                <p>Shipping Cost <span>FREE</span></p>
+                                <h2>Grand Total <span>₹<%=cartBill%></span></h2>
+                            </div>
+                            <div class="cart-summary-button">
+                               <a href="/checkout"> <button class="btn">Checkout</button></a>
+                               
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--Cart section end-->
+<%- include('partials/userFooter.ejs') %>
+<script>
+    $(document).ready(function() {
+    $(document).on('click', '.remove-item', function(event) {
+
+        Swal.fire({
+  title: "Are you sure?",
+  text: "Do you want to delete this product!",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: '#d33',
+  cancelButtonText: 'No',
+  cancelButtonColor: '#3085d6',
+  confirmButtonText: 'Yes'
+}).then((result) => {
+  if (result.isConfirmed) {
+    event.preventDefault();
+        const productId = $(this).data('product-id');
+        $.ajax({
+            url: `/cart/remove/${productId}`,
+            method: 'DELETE',
+            success: function(response) {
+                console.log('Product removed successfully');
+                window.location.href = '/cart?userMessage=Product removed from the cart successfully';
+            },
+            error: function(error) {
+                console.error('Error removing product:', error);
+                window.location.href = '/cart?userMessage=Something went wrong, Please try again!';
+            }
+        });
+  } 
+});
+        
+      
+    });
+});
+
+/*----- 
+	Quantity
+--------------------------------*/
+$('.pro-qty').prepend('<button class="dec qtybtn">-</button>');
+$('.pro-qty').append('<button class="inc qtybtn">+</button>');
+$('.qtybtn').on('click', function() {
+	var $button = $(this);
+	var oldValue = $button.parent().find('input').val();
+	if ($button.hasClass('inc')) {
+	  var newVal = parseFloat(oldValue) + 1;
+	} else {
+	   // Don't allow decrementing below zero
+	  if (oldValue > 1) {
+		var newVal = parseFloat(oldValue) - 1;
+		} else {
+		newVal = 1;
+	  }
+	  }
+      
+	let newdata=$button.parent().find('input').val(newVal);
+    var productId = newdata.data('product-id');
+        updateCartItem(productId, newVal);
+
+});
+
+function updateCartItem(productId, newQty) {
+    $.ajax({
+        url: `/addtocart?prdId=${productId}`,
+        method: 'POST',
+        data: { qty: newQty },
+        success: function(response) {
+            // Handle success response (if needed)
+            console.log('Cart item updated successfully');
+             window.location.reload();
+            // You can update the UI or display a success message here
+        },
+        error: function(error) {
+            // Handle error response (if needed)
+            console.error('Error updating cart item:', error);
+            // You can display an error message to the user
+        }
+    });
+}
+
+
+</script>
