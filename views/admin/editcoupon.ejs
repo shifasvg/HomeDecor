@@ -1,0 +1,67 @@
+<%- include('partials/adminHeader.ejs') %>
+
+<% if (typeof adminAlertmsg !== 'undefined') { %>
+    <div class="message-box" id="alertmsgID"><%= adminAlertmsg %></div>
+  <% } %>
+
+<div class="container-fluid py-4">
+    <div class="row">
+      <div class="col-12">
+        <div class="card mb-4">
+  
+          <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+            <h6 class="text-left mb-0">Edit coupon</h6>
+          </div>    
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <form  method="post" action="/admin/edit-coupon?id=<%=couponEdit._id%>"  id="coupon-form">
+                        <div class="mb-4">
+                            <label for="coupon_code" class="form-label">Coupon Code</label>
+                            <input type="text" name="couponCode" value="<%= couponEdit.code %>"  placeholder="Type here" class="form-control" id="coupon_code"/>
+                        </div>
+                        <div class="mb-4">
+                            <label for="Discount" class="form-label">Discount(in %)</label>
+                            <input type="number" name="couponValue" value="<%= couponEdit.value %>" placeholder="Type here" class="form-control" id="discount"/>
+                        </div>
+                        <div class="mb-4">
+                            <label for="Discount" class="form-label">Minimum amount</label>
+                            <input type="number" name="minBill" value="<%= couponEdit.minBill %>" placeholder="Type here" class="form-control" id="min_amount"/>
+                        </div>
+                        <div class="mb-4">
+                            <label for="Discount" class="form-label">Max amount</label>
+                            <input type="number" name="maxAmount" value="<%= couponEdit.maxAmount %>" placeholder="Type here" class="form-control" id="max_amount"/>
+                        </div>
+                   
+                        <div class="mb-4">
+                            <label for="validFromDate" class="form-label">expiry date</label>
+                            <% 
+                                const formattedDate = couponEdit.expiryDate ? 
+                                                      `${couponEdit.expiryDate.getFullYear()}-${('0' + (couponEdit.expiryDate.getMonth() + 1)).slice(-2)}-${('0' + couponEdit.expiryDate.getDate()).slice(-2)}` : 
+                                                      '';
+                            %>
+                            <input type="date" name="couponExpiry" value="<%= formattedDate %>" placeholder="Type here" class="form-control" id="valid_From"/>
+                        </div>
+                        
+                        
+                        <div class="d-grid">
+                            <button  type="submit" id="submit-button" class="btn btn-primary">Update coupon</button>
+                        </div>
+                       
+                    </form>
+                </div>
+              
+            </div> <!-- .row // -->
+        </div>
+       
+    </div> 
+
+
+</div>
+</div>
+</div>
+</div>
+    
+<%- include('partials/adminFooter.ejs') %>  
+

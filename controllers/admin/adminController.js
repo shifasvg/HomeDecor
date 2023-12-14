@@ -113,7 +113,7 @@ postAdminSignin : async (req,res) => {
             console.log(isAdmin)
             if (isAdmin) {
                 if (password == isAdmin.password) {
-                  req.session.cookie.path = '/admin';
+                 
                     req.session.admin = isAdmin.adminEmail;
                    
                     

@@ -7,7 +7,11 @@ const dbConnect = require('./config/dbConnect')
 const logger = require('morgan');
 const nocache = require('nocache');
 const path = require('path');
-const MemoryStore = require('memorystore')(session);
+const mongodbSession=require('connect-mongodb-session')(session)
+const store= new mongodbSession({
+    uri:"mongodb://127.0.0.1:27017/homeDecorDB",
+    collection:"SessionDB",
+})
 
 // Set routes
 const userRouter = require('./routes/userRouter');
@@ -43,7 +47,7 @@ const userSessionConfig = {
         maxAge: 6000000,
         httpOnly: true,
     },
-    store: new MemoryStore(),
+    store: store
 };
 
 // Admin session middleware configuration
@@ -56,7 +60,7 @@ const adminSessionConfig = {
         maxAge: 6000000,
         httpOnly: true,
     },
-    store: new MemoryStore(),
+    store:store
 };
 
 // Custom middleware to conditionally apply session based on path

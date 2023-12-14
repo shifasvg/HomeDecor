@@ -51,9 +51,9 @@ router.post('/payment',cartController.payment);
 
 router.get('/confirm-order',middle.isBlocked, middle.loggedIn, cartController.confirmOrder);
 router.get('/show-confirm-order', middle.isBlocked, middle.loggedIn, cartController.loadConfirmOrder);
-router.get('/razorpayPaymentFailed',cartController.razorpayPaymentFailed);
+// router.get('/razorpayPaymentFailed',cartController.razorpayPaymentFailed);
 router.get('/orderRedirect',cartController.orderSuccessRedirect);
-
+router.post('/applyCoupon',cartController.applyCoupon);
 //----------User Profile----------------//
 router.get('/user-profile', middle.isBlocked, middle.loggedIn, profileController.loadProfile);
 router.post('/user-edit-profile',profileController.editProfile)

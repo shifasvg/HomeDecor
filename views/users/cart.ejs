@@ -79,16 +79,18 @@
                         <!-- Discount Coupon -->
                         <div class="discount-coupon">
                             <h4>Discount Coupon Code</h4>
-                            <form action="#">
+                         
                                 <div class="row">
                                     <div class="col-md-6 col-12 mb-25">
-                                        <input type="text" placeholder="Coupon Code">
+                                        <input type="text" name="coupon" placeholder="Coupon Code" id="form3Examplea2">
                                     </div>
                                     <div class="col-md-6 col-12 mb-25">
-                                        <button class="btn">Apply Code</button>
+                                        <button type="submit" class="btn" onclick="couponApply('<%=cart._id%>','<%=cartBill%>')">Apply Code</button>
                                     </div>
+                                    <span style="color: green;" id="validation2"><b></b></span>
+                                    <span style="color: red;" id="validation"><b></b></span>
                                 </div>
-                            </form>
+                           
                         </div>
                     </div>
 
@@ -102,8 +104,10 @@
                                 <% totalQuantity += item.qty; %>
                                 <% }); %>
                                 <p>Sub Total (<%= totalQuantity %> items) <span>₹<%=cartBill%></span></p>
+                                <!-- <p id="couponCode"></p> -->
+                                <p id="couponValue"><span id="couponDiscount"></span></p>
                                 <p>Shipping Cost <span>FREE</span></p>
-                                <h2>Grand Total <span>₹<%=cartBill%></span></h2>
+                                <h2>Grand Total <span id="totalBill2">₹<%=cartBill%></span></h2>
                             </div>
                             <div class="cart-summary-button">
                                <a href="/checkout"> <button class="btn">Checkout</button></a>
@@ -203,3 +207,70 @@ function updateCartItem(productId, newQty) {
 
 
 </script>
+
+<script>
+   function couponApply(id1, bill1) {
+    let coupon = document.getElementById("form3Examplea2").value;
+    const bill = bill1;
+    console.log("bill", bill);
+    console.log("coupon", coupon);
+
+    if (coupon == "") {
+        document.getElementById("validation2").innerHTML = "";
+        document.getElementById("validation").innerHTML = "Please enter a coupon code";
+    } else {
+        document.getElementById("validation2").innerHTML = "";
+        document.getElementById("validation").innerHTML = "";
+        fetch("/applyCoupon", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                coupon: coupon,
+                bill: bill,
+            })
+        })
+
+        .then(respo => respo.json())
+        .then(response => {
+            console.log('found', response);
+            if (response.code == coupon.toUpperCase()) {
+                if (response.Status == "Active") {
+                    if (response.minBill > bill) {
+                        document.getElementById("validation").innerHTML = "Minimum Bill Required is ₹ " + response.minBill;
+                    } else {
+                        document.getElementById("validation").innerHTML = "";
+
+                        // Check if the elements exist before updating innerHTML
+                        const couponDiscountElement = document.getElementById("couponDiscount");
+                        const couponValueElement = document.getElementById("couponValue");
+                        const totalBill2Element = document.getElementById("totalBill2");
+
+                        if (couponDiscountElement && couponValueElement && totalBill2Element) {
+                            couponDiscountElement.innerHTML = "Coupon Discount";
+                            couponValueElement.innerHTML = "Coupon Discount "+response.value + "%" +"="+Math.floor(bill * response.value / 100);
+                            totalBill2Element.innerHTML = "₹ " + Math.floor(bill - (bill * response.value / 100));
+                            document.getElementById("validation2").innerHTML = coupon + "-Coupon Added Successfully";
+                        } else {
+                            console.error("One or more elements not found");
+                            document.getElementById("totalBill2").innerHTML = "₹ " + bill;
+                        }
+                    }
+                } else {
+                    document.getElementById("validation").innerHTML = "Coupon Expired";
+                    document.getElementById("totalBill2").innerHTML = "₹ " + bill;
+                }
+            } else {
+                document.getElementById("validation").innerHTML = "Coupon not found, try again";
+                document.getElementById("totalBill2").innerHTML = "₹ " + bill;
+            }
+        })
+        .catch(error => {
+            console.log(error);
+        });
+    }
+}
+
+  </script>
+  

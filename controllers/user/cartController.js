@@ -196,7 +196,7 @@ module.exports = {
               if (userData.cart.length === 0) {
                 return res.redirect('/cart?userMessage=Please add any product to continue');
               } else {
-                console.log("haillloo"+userData)
+    
                 const totalBill = await getTotalSum(userId._id);
                 if(req.session.userData){
                   res.render('users/checkout',{
@@ -429,8 +429,49 @@ module.exports = {
           const statusCode = error.status || 500;
           res.status(statusCode).send(error.message);
         }
+      },
+
+
+      applyCoupon : async (req,res) => {
+        try {
+          const code = req.body.coupon;
+    const bill = req.body.bill;
+
+    const couponFound = await Coupon.findOne({ code });
+    if (couponFound) {
+      if (couponFound.Status === 'Active') {
+        const coupDate = new Date(couponFound.expiryDate);
+        const currDate = new Date();
+        const status = currDate.getTime() > coupDate.getTime() ? 'Expired' : 'Active';
+
+        await Coupon.findOneAndUpdate({ code }, { $set: { Status: status } });
+
+        const Vcoupon = await Coupon.findOne({ code }); // Extra validation
+
+        if (Vcoupon.minBill < bill) {
+          req.session.appliedCoupon = Vcoupon;
+          const deduction = (bill * Vcoupon.value) / 100;
+          let final;
+          if (Vcoupon.maxAmount > deduction) {
+            final = bill - (bill * Vcoupon.value) / 100;
+          } else {
+            final = bill - Vcoupon.maxAmount;
+          }
+
+          req.session.orderBill = final;
+        }
+        res.json(couponFound);
+      } else {
+        res.json(couponFound);
       }
-      
+    } else {
+      res.json(307);
+    }
+        } catch (error) {
+          console.log(error.message);
+          res.status(error.status || 500).json({ success: false, error: error.message });
+        }
+      }
       
 
 

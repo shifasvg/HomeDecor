@@ -49,10 +49,14 @@ router.get('/report',controller.orderReport);
 
 //coupon management
 router.get('/coupon-management',couponController.loadCoupon);
-
-
+router.post('/add-coupon',couponController.addCoupon);
+router.get('/add-coupon-page',couponController.loadAddCoupon);
+router.get('/edit-coupon-page',couponController.loadEditcoupon);
+router.post('/edit-coupon',couponController.editCoupon);
+router.get('/coupon-Deactivate',couponController.couponDeactivate);
+router.get('/coupon-Activate',couponController.couponActivate);
 //admin signout
 router.get('/signout',controller.adminSignout);
 
-router.get('/tested',controller.tested)
+
 module.exports = router;

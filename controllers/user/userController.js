@@ -352,7 +352,7 @@ console.log(email,password)
             if(passwordmatch){  //password matched
 
                 if(!userData.blocked){ //if account not blocked
-                    req.session.cookie.path = '/';
+                   
                     req.session.userData = userData;
                     req.session.user = userData.email; 
     
