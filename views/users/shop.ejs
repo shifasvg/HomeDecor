@@ -253,13 +253,24 @@
                                     </div>
                                     <div class="row mb-30 mb-sm-40 mb-xs-30">
                                         <div class="col">
+                                            
+                                               
                                             <ul class="page-pagination">
-                                                <li class="active"><a href="#">01</a></li>
-                                                <li><a href="#">02</a></li>
-                                                <li><a href="#">03</a></li>
-                                                <li><a href="#">04</a></li>
-                                                <li><a href="#">05</a></li>
-                                                <li><a href="#">Next</a></li>
+                                            <% if (totalpages) { %>
+                                                <div class="pagination justify-content-center">
+                                                  <% if (currentpage > 1) { %>
+                                                    <button class="btn btn-sm"><a href="?page=<%= currentpage - 1 %>">Previous</a></button>
+                                                  <% } %>
+                                              
+                                                  <% for (let i = 1; i <= totalpages; i++) { %> <!-- Change the loop to start from 1 and go up to totalpages -->
+                                                    <button class="btn btn-sm"><a href="?page=<%= i %>" class="<%= i === currentpage ? 'active' : '' %>"><%= i %></a></button>
+                                                  <% } %>
+                                              
+                                                  <% if (currentpage < totalpages) { %>
+                                                  <li>  <a href="?page=<%= currentpage + 1 %>"></a><button class="btn btn-sm">Next</button></a></li>
+                                                  <% } %>
+                                                </div>
+                                              <% } %>
                                             </ul>
                                         </div>
                                     </div>

@@ -7,54 +7,71 @@ const dbConnect = require('./config/dbConnect')
 const logger = require('morgan');
 const nocache = require('nocache');
 const path = require('path');
+const MemoryStore = require('memorystore')(session);
 
-//set routes
+// Set routes
 const userRouter = require('./routes/userRouter');
 const adminRouter = require('./routes/adminRouter');
 
 const { err404handle, errorHandler } = require('./middleware/errorHandler');
 
-//setting port
+// Setting port
 const PORT = process.env.PORT || 5000;
 
-
-//database 
+// Database 
 dbConnect();
 
-//set view engine
+// Set view engine
 app.set("view engine", "ejs");
 app.set('views', ['views','views/partials','views/users','views/admin']);
-// app.set('view cache', false);
 
-//load static files
+// Load static files
 app.use(express.static(path.join(__dirname, 'public')));
-
-
-
 app.use(logger('dev'));
 
-//parse application
+// Parse application
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
-app.use(session({
-    secret:"secret",
-    resave:false,
-    saveUninitialized:true,
+// User session middleware configuration
+const userSessionConfig = {
+    secret: 'user-secret',
+    resave: false,
+    saveUninitialized: true,
     cookie: {
-         maxAge: 6000000,
-        httpOnly:true
-     }
-}))
+        path: '/',
+        maxAge: 6000000,
+        httpOnly: true,
+    },
+    store: new MemoryStore(),
+};
 
-app.use((req, res, next) => {
-    res.setHeader('Cache-Control', 'no-store, must-revalidate');
-    next();
-});
+// Admin session middleware configuration
+const adminSessionConfig = {
+    secret: 'admin-secret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        path: '/admin',
+        maxAge: 6000000,
+        httpOnly: true,
+    },
+    store: new MemoryStore(),
+};
 
+// Custom middleware to conditionally apply session based on path
+const sessionMiddleware = (req, res, next) => {
+    if (req.path.startsWith('/admin')) {
+        session(adminSessionConfig)(req, res, next);
+    } else {
+        session(userSessionConfig)(req, res, next);
+    }
+};
 
+app.use(nocache());
 
+// Apply session middleware
+app.use(sessionMiddleware);
 
 // Apply user session middleware for user routes
 app.use('/', userRouter);
@@ -62,12 +79,9 @@ app.use('/', userRouter);
 // Apply admin session middleware for admin routes
 app.use('/admin', adminRouter);
 
-
-
-
 app.use(err404handle);
 app.use(errorHandler);
 
-app.listen(PORT,()=>{
-    console.log(`server is running at http://localhost:${PORT}`)
-})
+app.listen(PORT, () => {
+    console.log(`server is running at http://localhost:${PORT}`);
+});

@@ -72,7 +72,7 @@ loadAdminDashboard: async (req,res) => {
         { $match: { 'items.orderStatus': 'Delivered' } },
         { $group: { _id: null, totalProducts: { $sum: '$items.quantity' } } },
       ]);
-      console.log("hellototalsales",quantitySum)
+  
         res.render('admin/adminDashboard',{
           adminAlertmsg,
           months,
@@ -113,8 +113,10 @@ postAdminSignin : async (req,res) => {
             console.log(isAdmin)
             if (isAdmin) {
                 if (password == isAdmin.password) {
+                  req.session.cookie.path = '/admin';
                     req.session.admin = isAdmin.adminEmail;
-                    console.log(req.session.admin);
+                   
+                    
                    // res.send('hello')
                     res.redirect('/admin/dashboard?message=Admin logged in')
 
@@ -135,8 +137,14 @@ postAdminSignin : async (req,res) => {
 adminSignout : async (req,res) => {
 
     try {
-        req.session.destroy()
-        res.redirect('/admin/signin?message=admin logged out successfully!')
+    
+
+        console.log("admin logout - Before destroy:", req.session);
+        // Destroy only the admin session
+       req.session.destroy();
+        console.log("after admin logout:", req.session)
+        res.redirect('/admin/signin?message=admin logged out successfully!');
+    
     } catch (error) {
         console.log(error.message);
         const statusCode = error.status || 500;
@@ -655,5 +663,13 @@ orderReport: async (req, res) => {
     console.log(error.message);
   }
 },
+
+tested: async(req,res)=> {
+  try {
+    res.render('admin/coupon')
+  } catch (error) {
+    console.log(error.message);
+  }
+}
 
 }

@@ -3,7 +3,6 @@ const usersCollection = require("../models/userModel");
 const loggedIn = async (req,res,next) => {
 
     if(req.session.user){
-console.log("checking session  "+req.session.user)
         try {
             const user = req.session.user;
             const userDetails = await usersCollection.findOne({email: user});

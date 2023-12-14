@@ -1,0 +1,120 @@
+<%- include('partials/adminHeader.ejs') %>
+
+<div class="container-fluid py-4">
+    <div class="row">
+      <div class="col-12">
+        <div class="card mb-4">
+  
+          <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+            <h6 class="text-left mb-0">coupons</h6>
+          </div>    
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <form  method="post" action="/admin/add-coupon"  id="coupon-form">
+                        <div class="mb-4">
+                            <label for="coupon_code" class="form-label">Coupon Code</label>
+                            <input type="text" name="couponcode" placeholder="Type here" class="form-control" id="coupon_code"/>
+                        </div>
+                        <div class="mb-4">
+                            <label for="Discount" class="form-label">Discount</label>
+                            <input type="number" name="discount" placeholder="Type here" class="form-control" id="discount"/>
+                        </div>
+                        <div class="mb-4">
+                            <label for="Discount" class="form-label">Minimum amount</label>
+                            <input type="number" name="min_amount" placeholder="Type here" class="form-control" id="min_amount"/>
+                        </div>
+                        <div class="mb-4">
+                            <label for="Discount" class="form-label">Max amount</label>
+                            <input type="number" name="max_amount" placeholder="Type here" class="form-control" id="max_amount"/>
+                        </div>
+                   
+                        <div class="mb-4">
+                            <label for="validFromDate" class="form-label">ValidFromDate</label>
+                            <input type="date" name="validFromDate" placeholder="Type here" class="form-control" id="valid_From"/>
+                        </div>
+                        <div class="mb-4">
+                            <label for="validTillDate" class="form-label">ValidTillDate</label>
+                            <input type="date" name="validTillDate" placeholder="Type here" class="form-control" id="valid_Till"/>
+                        </div>
+                         <div>                           
+                        </div>
+                        <div class="d-grid">
+                            <button  type="submit" id="submit-button" class="btn btn-primary">SAVE</button>
+                        </div>
+                       
+                    </form>
+                </div>
+                <div class="col-md-9">
+                    <div class="table-responsive">
+                        <table class="table table-hover text-center">
+                            <thead>
+                                <tr>
+                                    <th><b>No</b></th>
+                                    <th><b>Coupon code</b></th>
+                                    <th><b>Discount</b></th>
+                                    <th><b>Min amount</b></th>
+                                    <th><b>ValidFromDate</b></th>
+                                    <th><b>ValidTillDate</b></th>
+                                    <th class="text-end"><b>Action</b></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (coupon.length > 0) { %>
+                                <% coupon.forEach(function(coupon, index) { %>
+                                    <tr>
+                                      <td><%= index + 1 %></td>
+                                      <td><%= coupon.code %></td>
+                                      <td><%= coupon.value %></td>
+                                      <td><%= coupon.minBill %></td>
+                                      <td><%= coupon.maxAmount %></td>
+                                      <td><%= formatDate(coupon.expiryDate) %></td>
+                                      <% if (coupon.Status==="Active") { %>
+                                      <td class="text-success"><%= coupon.Status %></td>
+                                      <% } else { %>
+                                      <td class="text-danger"><%= coupon.Status %></td>
+                                      <% } %>
+                                      <td>
+                                        <a href="/admin/coupon/edit?id=<%= coupon._id %>" class="btn btn-blue">Edit</a>
+                                        <% if (coupon.Status==="Active") { %>
+                                        <a href="/admin/coupon/Deactivate?id=<%= coupon._id %>" class="btn btn-red">Deactivate</a>
+                                        <% }else{ %>
+                                        <a href="/admin/coupon/Activate?id=<%= coupon._id %>" class="btn btn-green">Activate</a>
+                                        <% }%>
+                                      </td>
+                                    </tr>
+                                    <% }); %>
+                                    <% } else { %>
+                                        <tr>
+                                          <td colspan="8"> NO coupons Found</td>
+                                        </tr>
+                                      <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div> <!-- .col// -->
+            </div> <!-- .row // -->
+        </div>
+       
+    </div> 
+
+    <div class="pagination-area mt-30 mb-50">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+                <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                <li class="page-item"><a class="page-link" href="#">02</a></li>
+                <li class="page-item"><a class="page-link" href="#">03</a></li>
+                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                <li class="page-item"><a class="page-link" href="#">16</a></li>
+                <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
+            </ul>
+        </nav>
+    </div>
+
+</div>
+</div>
+</div>
+</div>
+    
+<%- include('partials/adminFooter.ejs') %>  

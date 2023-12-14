@@ -2,7 +2,7 @@ const express = require('express');
 const controller = require('../controllers/admin/adminController');
 const middle = require('../middleware/adminMiddleware');
 const upload = require('../middleware/multer');
-
+const couponController = require('../controllers/admin/couponController');
 const router = express.Router();
 
 //admin signin
@@ -47,8 +47,12 @@ router.post('/editStatus',controller.editStatus);
 //sales report
 router.get('/report',controller.orderReport);
 
+//coupon management
+router.get('/coupon-management',couponController.loadCoupon);
+
+
 //admin signout
 router.get('/signout',controller.adminSignout);
 
-
+router.get('/tested',controller.tested)
 module.exports = router;

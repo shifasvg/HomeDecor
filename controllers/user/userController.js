@@ -352,7 +352,7 @@ console.log(email,password)
             if(passwordmatch){  //password matched
 
                 if(!userData.blocked){ //if account not blocked
-
+                    req.session.cookie.path = '/';
                     req.session.userData = userData;
                     req.session.user = userData.email; 
     
@@ -388,10 +388,14 @@ console.log(email,password)
 signOutUser: async (req,res) => {
 
     try {
-       
-        req.session.destroy();
-        console.log("after destroy")
+        // Example in user route
+
+        if(req.session.user){
+            console.log('user logout - Before destroy:', req.session);
+           req.session.destroy();
+        console.log('AFTER user logout - Before destroy:', req.session);
         return res.redirect('/signin?userMessage=you have been Logged Out!')
+        }
 
     } catch (error) {
         console.log(error.message);
@@ -720,13 +724,20 @@ if(req.query.catid){
     // console.log("categories ===="+categories)
      //console.log("categoryproducts ==="+products)
    
+     const itemsperpage = 2;
+     const currentpage = parseInt(req.query.page) || 1;
+     const startindex = (currentpage - 1) * itemsperpage;
+     const endindex = startindex + itemsperpage;
+     const totalpages = Math.ceil(products.length / 2);
+     const currentproduct = products.slice(startindex,endindex);
+
       res.render('users/shop', {
       
         categories: categories,
     products,
-userAlertmsg, user, userData,userInfo})
+userAlertmsg, user, userData,userInfo,currentproduct, totalpages,currentpage})
 }else{
-    const products = await productCollection.aggregate([
+    const cproducts = await productCollection.aggregate([
         {
             $match: { isDeleted: false }
         },
@@ -746,16 +757,18 @@ userAlertmsg, user, userData,userInfo})
         }
     ]).exec();
     
-    
-    //console.log("categories ===="+categories)
-    // console.log("products ==="+products)
-    console.log("userrr===="+user)
-    console.log("Notcategoryproducts ==="+products)
+    const itemsperpage = 3;
+    const currentpage = parseInt(req.query.page) || 1;
+    const startindex = (currentpage - 1) * itemsperpage;
+    const endindex = startindex + itemsperpage;
+    const totalpages = Math.ceil(cproducts.length / 3);
+    const products = cproducts.slice(startindex,endindex);
+
       res.render('users/shop', {
       
         categories: categories,
     products,
-userAlertmsg, user,userData,userInfo})
+userAlertmsg, user,userData,userInfo, totalpages,currentpage})
 }
 
        

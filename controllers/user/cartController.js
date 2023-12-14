@@ -50,12 +50,13 @@ module.exports = {
     
           const cart = cartUser ? cartUser.cart : [];
     const userInfo = cartUser;
-       
+    const productStock = cart.map(cartItem => cartItem.prod_id.stock);
              const result = await getTotalSum(userData._id);
              let headerData = userData
             res.render('users/cart',{
                 cart,
                 cartBill: result,
+                productStock,
                 userData,
                 userAlertmsg,
                 user,
@@ -107,6 +108,7 @@ module.exports = {
           }else if(existingCartItem && existingCartItem.qty == newQty){
             
             res.redirect(`/product-view?id=${prdId}&userMessage=Product already in cart`);
+
           } else if (existingCartItem && (existingCartItem.qty < newQty || existingCartItem.qty > newQty)) {
             const tprice = newQty * product.price;
             const updateprd = await User.updateOne(
@@ -114,9 +116,11 @@ module.exports = {
                 { $set: { 'cart.$[elem].qty': newQty, 'cart.$[elem].unit_price': product.price, 'cart.$[elem].total_price': tprice } },
                 { arrayFilters: [{ 'elem.prod_id': existingCartItem.prod_id }] }
               );
-              
+              const result = await getTotalSum(userData._id);
       
-            res.redirect(`/cart?userMessage=Product already in cart and qty updated`);
+            // res.redirect(`/cart?userMessage=Product already in cart and qty updated`);
+            res.json({
+              grandTotal:result})
           } else {
             const newItem = {
               prod_id: prdId, // Use prdId instead of id 
@@ -341,7 +345,7 @@ module.exports = {
             const orderSaved = await newOrder.save();
             const cartUpdated = await User.findOneAndUpdate({ _id: user._id }, { $set: { cart: [] } }, { new: true });
             res.redirect('/show-confirm-order')
-            
+             
           }else if(paymentMode == 'Razorpay'){
             const newOrder = createOrders(cart, paymentMode, address, orderBill);
 
