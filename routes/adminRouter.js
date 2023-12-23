@@ -46,7 +46,7 @@ router.post('/editStatus',controller.editStatus);
 
 //sales report
 router.get('/report',controller.orderReport);
-
+router.get('/download-sales-report',controller.downloadSales)
 //coupon management
 router.get('/coupon-management',couponController.loadCoupon);
 router.post('/add-coupon',couponController.addCoupon);

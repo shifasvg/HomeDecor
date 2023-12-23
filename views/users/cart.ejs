@@ -106,7 +106,7 @@
                                 <p>Sub Total (<%= totalQuantity %> items) <span>₹<%=cartBill%></span></p>
                                 <!-- <p id="couponCode"></p> -->
                                 <p id="couponValue"><span id="couponDiscount"></span></p>
-                                <p>Shipping Cost <span>FREE</span></p>
+                                <div><p>Shipping Cost <span>FREE</span></p></div>
                                 <h2>Grand Total <span id="totalBill2">₹<%=cartBill%></span></h2>
                             </div>
                             <div class="cart-summary-button">
@@ -249,7 +249,7 @@ function updateCartItem(productId, newQty) {
 
                         if (couponDiscountElement && couponValueElement && totalBill2Element) {
                             couponDiscountElement.innerHTML = "Coupon Discount";
-                            couponValueElement.innerHTML = "Coupon Discount "+response.value + "%" +"="+Math.floor(bill * response.value / 100);
+                            couponValueElement.innerHTML = "Coupon Discount "+response.value + "%" +"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-₹"+Math.floor(bill * response.value / 100);
                             totalBill2Element.innerHTML = "₹ " + Math.floor(bill - (bill * response.value / 100));
                             document.getElementById("validation2").innerHTML = coupon + "-Coupon Added Successfully";
                         } else {

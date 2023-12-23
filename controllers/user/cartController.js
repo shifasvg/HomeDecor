@@ -196,8 +196,14 @@ module.exports = {
               if (userData.cart.length === 0) {
                 return res.redirect('/cart?userMessage=Please add any product to continue');
               } else {
-    
-                const totalBill = await getTotalSum(userId._id);
+               
+                if(req.session.orderBill){
+                   totalBill = req.session.orderBill;
+                }else{
+                   totalBill = await getTotalSum(userId._id);
+                }
+              
+               
                 if(req.session.userData){
                   res.render('users/checkout',{
                     userData,
@@ -205,7 +211,8 @@ module.exports = {
                     user,
                     totalBill,
                     cart:userData.cart,
-                    address:userData.address
+                    address:userData.address,
+                    deduction:req.session.deduction
                   })
                 }else{
                  return res.status(404).render('users/error')
@@ -257,18 +264,23 @@ module.exports = {
          
           req.session.selectedAddress = selectedAddress;
           req.session.paymentMethod = selectedPaymentMethod;
-          const totalBill = await getTotalSum(userId._id);
+          if(!req.session.orderBill){
+            const totalBill = await getTotalSum(userId._id);
           req.session.orderBill = totalBill;
+         
+          }
+       
           const keyId = process.env.rpId
             res.render('users/payment',{
               userAlertmsg,
               user,
               userData,
               item:selectedAddress,
-              totalBill,
+              totalBill:req.session.orderBill,
               cart:userData.cart,
               selectedPaymentMethod,
-              keyId
+              keyId,
+              deduction:req.session.deduction
             })
           
         } catch (error) {
@@ -383,6 +395,7 @@ module.exports = {
           });
           const newOrder = new Order(order);
           await newOrder.save();
+          
           await User.findOneAndUpdate({ _id: user._id }, { $set: { cart: [] } }, { new: true });
       
           return res.redirect('/show-confirm-order');
@@ -404,6 +417,7 @@ module.exports = {
           const orderedCartItems =  req.session.orderedCartItems
           const selectedAddress = req.session.selectedAddress;
           const paymentMode = req.session.paymentMethod;
+         
           res.render('users/orderConfirmed',{
             user,
             userAlertmsg,
@@ -411,7 +425,9 @@ module.exports = {
             orderedCartItems :orderedCartItems,
             orderBill:req.session.orderBill,
             item:selectedAddress,
-            paymentMode
+            paymentMode,
+            deduction:req.session.deduction,
+           
           })
 
         } catch (error) {
@@ -458,7 +474,8 @@ module.exports = {
             final = bill - Vcoupon.maxAmount;
           }
 
-          req.session.orderBill = final;
+          req.session.orderBill = Math.floor(final);
+          req.session.deduction = Math.floor(deduction);
         }
         res.json(couponFound);
       } else {

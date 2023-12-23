@@ -47,21 +47,35 @@
                       </tr>
                     </thead>
                     <tbody>
-                        
+                      <% let totalprdprice = 0; %>
                         <% orderedCartItems.forEach(function(product, index) { %>
                             <td><%=product.prod_id.productname%></td>
                             <td><%=product.qty%></td>
                             <td>₹<%=product.total_price%></td>
+                            <% totalprdprice += product.total_price; %>
                           </tr>
                             <% }) %>
                       <tr>
                       
                      
                     </tbody>
-                    <tfoot>
+                    <tfoot >
+                      <% if (typeof deduction !== 'undefined') { %>
+                       
+
+                        <tr>
+                          <th colspan="2">Total</th>
+                          <th style="text-align: right;">₹<%=totalprdprice%></th>
+                        </tr>
+                        <tr>
+                          <th colspan="2">Coupon discount</th>
+                          <th style="text-align: right;">-₹<%=deduction%></th>
+                        </tr>
+                       
+                      <% } %>
                       <tr>
-                        <th colspan="2">Total</th>
-                        <th>₹<%=orderBill%></th>
+                        <th colspan="2">Grand Total</th>
+                        <th style="text-align: right ;">₹<%=orderBill%></th>
                       </tr>
                     </tfoot>
                   </table>

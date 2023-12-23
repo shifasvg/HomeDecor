@@ -73,6 +73,9 @@ loadAdminDashboard: async (req,res) => {
         { $group: { _id: null, totalProducts: { $sum: '$items.quantity' } } },
       ]);
   
+      const orders1 = await Order.find({}).sort({ orderDate: -1 }).limit(5);
+ 
+
         res.render('admin/adminDashboard',{
           adminAlertmsg,
           months,
@@ -80,7 +83,7 @@ loadAdminDashboard: async (req,res) => {
           totalBill: orderSum[0].totalBill,
           orderCount,
           userCount,
-          totalQuantity: quantitySum[0].totalProducts,});
+          totalQuantity: quantitySum[0].totalProducts,orders1});
     } catch (error) {
         console.log(error.message);
         const statusCode = error.status || 500;
@@ -664,9 +667,33 @@ orderReport: async (req, res) => {
   }
 },
 
-tested: async(req,res)=> {
+downloadSales: async(req,res)=> {
   try {
-    res.render('admin/coupon')
+    const orders = await fetchDataForSalesReport();
+
+    // Convert the data to CSV format
+    const csvContent = orders.map(order => {
+      return order.items.map(item => {
+        return [
+          item.images,
+          item.productname,
+          item._id,
+          item.quantity,
+          item.bill,
+          item.orderStatus,
+          order.paymentMode,
+          formatDate(order.orderDate),
+          order.orderBill
+        ].join(',');
+      }).join('\n');
+    }).join('\n');
+
+    // Save the CSV content to a file
+    fs.writeFileSync('public/sales_report.csv', csvContent);
+
+    // Respond with the file download
+    res.download('public/sales_report.csv');
+  res.redirect('/admin/report')
   } catch (error) {
     console.log(error.message);
   }

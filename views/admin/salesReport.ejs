@@ -10,7 +10,9 @@
       <div class="card mb-4">
 
         <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-          <h6 class="text-left mb-0">Orders</h6>
+          <h6 class="text-left mb-0">Sales report</h6>
+
+        <h6><a onclick="downloadSalesReport()" class="btn btn-primary">download</a></h6>
         </div>
 
         
@@ -68,3 +70,26 @@
 </div>
 
 <%- include('partials/adminFooter.ejs') %>
+<script>
+  function downloadSalesReport() {
+    // Fetch the table data
+    var table = document.querySelector('.table');
+    var rows = Array.from(table.querySelectorAll('tr'));
+
+    // Extract data from each row
+    var csvContent = rows.map(row => {
+      var columns = Array.from(row.querySelectorAll('td'));
+      return columns.map(column => column.innerText).join(',');
+    }).join('\n');
+
+    // Create a Blob and initiate download
+    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    var link = document.createElement("a");
+    var url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "sales_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+</script>
