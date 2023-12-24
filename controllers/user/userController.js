@@ -237,9 +237,9 @@ loadSignupOtpPage: async (req,res) => {
         console.log("checking null or not === ==="+userAlertmsg,transporter,edit,resend)
         res.render('users/otpPageSignup',{userAlertmsg,transporter,edit,resend});
     } catch (error) {
-        console.log(error.message);
+        console.error(error);  // Log the error for debugging
         const statusCode = error.status || 500;
-        res.status(statusCode).send(error.message);
+        res.status(statusCode).render('error', { error }); 
     }
 },
 
