@@ -87,7 +87,7 @@ loadAddress: async (req,res) => {
             model: 'Product',
           });
 
-          console.log("usrPfileDataaaaa"+userProfileData)
+         
       
         res.render('users/address',{
             user,
@@ -199,6 +199,45 @@ deleteAddress: async (req,res) => {
         const statusCode = error.status || 500;
         res.status(statusCode).send(error.message); 
     }
-}
+},
+
+loadWallet : async (req,res) => {
+    try {
+        let userAlertmsg;
+        let user;
+       
+        if(req.query.userMessage || req.session.user){
+            userAlertmsg = req.query.userMessage;
+            user = req.session.user;
+           
+        }
+
+        if(req.session.user){
+            const userData = req.session.userData;
+        const userProfileData = await User.findById(userData._id).populate({
+            path: 'cart.prod_id',
+            model: 'Product',
+          });
+
+          res.render('users/wallet',{
+            user,
+            userData,
+            userProfileData,
+            userAlertmsg
+        });
+        }else{
+            res.status(500).render("users/error");
+        }
+
+    
+
+    } catch (error) {
+        console.log(error.message);
+        const statusCode = error.status || 500;
+        res.status(statusCode).send(error.message);
+    }
+},
+
+
 
 }

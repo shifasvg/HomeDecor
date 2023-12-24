@@ -1,0 +1,146 @@
+
+<% if (typeof user !== 'undefined') { %>
+    <%- include('../partials/userLoggedHeader.ejs') %>
+    <% } else { %>
+        <%- include('../partials/userHeader.ejs') %>
+        <% } %>
+
+        
+<% if (typeof userAlertmsg !== 'undefined') { %>
+    <div class="message-box" id="alertmsgID"><%= userAlertmsg %></div>
+<% } %>
+
+
+         <!-- Page Banner Section Start -->
+ <div class="page-banner-section section bg-image" style="height: 100px;background-color: rgb(226, 226, 226);"></div>
+<!-- Page Banner Section End -->   
+
+        <!--My Account section start-->
+        <div class="my-account-section section pt-90 pt-lg-70 pt-md-60 pt-sm-50 pt-xs-45  pb-100 pb-lg-80 pb-md-70 pb-sm-60 pb-xs-50" >
+            <div class="container" id="address">
+                <div class="row">
+
+                    <div class="col-12">
+                        <div class="row">
+                            <!-- My Account Tab Menu Start -->
+                            <%- include('../partials/profileSidebar.ejs') %>
+                            <!-- My Account Tab Menu End -->
+
+                            <!-- My wallet Tab Content Start -->
+                            <div class="col-lg-9 col-12">
+                                <div class="tab-content" id="myaccountContent">
+                                    
+                                    </div>
+                                    <!-- Single Tab Content End -->
+                                    <h3>My wallet</h3>
+
+                                    <div class="myaccount-table table-responsive text-center">
+                                       
+                                            <div class="col-md-10">
+  <div class="row">
+      <div class="col-md-5 col-sm-6">
+          <div class="p-4 d-flex flex-column purple-bg-color round-corner">
+              <span class="text-uppercase font-10 weight-600 white-color-2">Balance Details</span>
+              <span class="font-28 weight-700 white-color mt-4">₹0</span><br>
+              <div class="d-flex flex-row justify-content-between mt-4">
+                 
+              </div>
+              <div >
+                <div class="wallet-input">
+                    <input type="number" placeholder="Enter amout">
+                 </div>
+                  <button class="flex-grow-1 ms-1 py-2 text-uppercase font-12 weight-700 white-color orange-bg-color">+ Add Money</button>
+              </div>
+          </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+         
+        <div class="col-md-8">
+            <div>
+                <table class="table table-borderless">
+                    <thead>
+                        <tr>
+                            <th class="text-uppercase font-10 weight-600 grey-color-2">Transactions</th>
+                            <th class="text-uppercase font-10 weight-600 purple-color-2 text-end">View All</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="d-flex flex-row">
+                                    <div class="d-flex flex-row justify-content-center align-items-center orange-color square round-corner-small light-orange-bg-color font-14">
+                                        <i class="fas fa-long-arrow-alt-up"></i>
+                                    </div>
+                                    <div class="d-flex flex-column ps-2">
+                                        <span class="font-14 weight-700 purple-color-2">Sent BTE</span>
+                                        <span class="font-10 weight-400 purple-color-2">12 Nov, 2020</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column align-items-end">
+                                    <span class=" font-16 weight-700 orange-color ">-$1,289.00</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex flex-row ">
+                                    <div class="d-flex flex-row justify-content-center align-items-center square round-corner-small light-purple-bg-color purple-color-2 font-14 ">
+                                        <i class="fas fa-long-arrow-alt-down "></i>
+                                    </div>
+                                    <div class="d-flex flex-column ps-2 ">
+                                        <span class="font-14 weight-700 purple-color-2 ">Received USDT</span>
+                                        <span class="font-10 weight-400 purple-color-2 ">12 Nov, 2020</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column align-items-end ">
+                                    <span class="font-16 weight-700 purple-color-2 ">-$1,289.00</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex flex-row ">
+                                    <div class="d-flex flex-row justify-content-center align-items-center square round-corner-small light-orange-bg-color orange-color font-14 ">
+                                        <i class="fas fa-long-arrow-alt-up "></i>
+                                    </div>
+                                    <div class="d-flex flex-column ps-2 ">
+                                        <span class="font-14 weight-700 purple-color-2 ">Sent XRP</span>
+                                        <span class="font-10 weight-400 purple-color-2 ">12 Nov, 2020</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column align-items-end ">
+                                    <span class="font-16 weight-700 orange-color ">-$1,289.00</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+      </div>
+</div>
+</div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <!-- My Account Tab Content End -->
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!--My Account section end-->
+        <%- include('partials/userFooter.ejs') %>
+
+
+    
