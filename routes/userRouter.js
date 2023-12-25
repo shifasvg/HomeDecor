@@ -61,7 +61,8 @@ router.get('/user-address', middle.isBlocked, middle.loggedIn, profileController
 router.post('/add-new-address',profileController.addNewAddress);
 router.post('/edit-address',profileController.editAddress);
 router.get('/user-profile/delete-address', middle.isBlocked, middle.loggedIn, profileController.deleteAddress);
-router.get('/user-wallet',profileController.loadWallet)
+router.get('/user-wallet',profileController.loadWallet);
+router.get('/add-wallet-money',profileController.addWalletMoney);
 //----------User order-------------//
 router.get('/user-orders', middle.isBlocked, middle.loggedIn, orderController.loadUserOrder);
 router.post('/cancelOrder', orderController.cancelOrder);

@@ -1,7 +1,7 @@
 const User = require('../../models/userModel');
 const Category = require('../../models/categoryModel');
 const bcrypt = require('bcrypt');
-
+const Razorpay = require('razorpay');
 module.exports = {
 
 loadProfile: async (req,res) => {
@@ -214,16 +214,22 @@ loadWallet : async (req,res) => {
 
         if(req.session.user){
             const userData = req.session.userData;
+       
+            const walletBalance = await User.findById(userData._id, 'wallet');
+            console.log('wallet', walletBalance);
+
         const userProfileData = await User.findById(userData._id).populate({
             path: 'cart.prod_id',
             model: 'Product',
           });
-
+          const keyId = process.env.rpId
           res.render('users/wallet',{
             user,
             userData,
             userProfileData,
-            userAlertmsg
+            userAlertmsg,
+            keyId,
+           walletBalance: walletBalance.wallet,
         });
         }else{
             res.status(500).render("users/error");
@@ -238,6 +244,34 @@ loadWallet : async (req,res) => {
     }
 },
 
+addWalletMoney: async(req,res) =>{
+    try {
+        const bill = req.query.amount;
+      const userid = req.session.userData
+        // Find the user by ID
+        const user = await User.findOne({ _id: userid });
 
+        // Update the wallet amount
+        user.wallet += parseFloat(bill); 
+
+        // Save the updated user
+        await user.save();
+            const razorpay = new Razorpay({
+              key_id: 'rzp_test_1RHZRb2L3r35z5',
+              key_secret: 'gpL4LQjEoyKCFx83VOLwd3E5',
+            });
+            console.log(razorpay);
+            const options = {
+              amount: bill * 100, // to smallest currency  paisa
+              currency: 'INR',
+            };
+            const order = await razorpay.orders.create(options);
+            res.json({ razorpay: true, bill });
+    } catch (error) {
+        console.log(error.message);
+        const statusCode = error.status || 500;
+        res.status(statusCode).send(error.message);
+    }
+}
 
 }

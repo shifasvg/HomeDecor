@@ -41,21 +41,25 @@
       <div class="col-md-5 col-sm-6">
           <div class="p-4 d-flex flex-column purple-bg-color round-corner">
               <span class="text-uppercase font-10 weight-600 white-color-2">Balance Details</span>
-              <span class="font-28 weight-700 white-color mt-4">₹0</span><br>
+              <span class="font-28 weight-700 white-color mt-4">₹<%=walletBalance%></span><br>
               <div class="d-flex flex-row justify-content-between mt-4">
-                 
+                <% if(locals.keyId){%>
+                    <input type="hidden" id="keyId" value="<%= keyId %>">
+                    <% }%>
               </div>
               <div >
-                <div class="wallet-input">
-                    <input type="number" placeholder="Enter amout">
-                 </div>
-                  <button class="flex-grow-1 ms-1 py-2 text-uppercase font-12 weight-700 white-color orange-bg-color">+ Add Money</button>
+                <form id="addMoneyForm" onsubmit="addMoney(event)">
+                    <div class="wallet-input">
+                        <input type="number" id="amountInput" name="amount" placeholder="Enter amount" required>
+                    </div>
+                    <button type="submit" class="flex-grow-1 ms-1 py-2 text-uppercase font-12 weight-700 white-color orange-bg-color">+ Add Money</button>
+                </form>
               </div>
           </div>
       </div>
       <div class="col-md-3 col-sm-6">
          
-        <div class="col-md-8">
+        <!-- <div class="col-md-8">
             <div>
                 <table class="table table-borderless">
                     <thead>
@@ -122,7 +126,7 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div> -->
 
       </div>
 </div>
@@ -143,4 +147,85 @@
         <%- include('partials/userFooter.ejs') %>
 
 
+    <script>
+         function addMoney(event) {
+        // Prevent the default form submission
+       
+            event.preventDefault();
+
+        // Get the input value
+        const amount = document.getElementById("amountInput").value;
+        $.ajax({
+            url:"add-wallet-money",
+            method:"get",
+            data:{amount:amount},
+            success: (response) => {
+               if (response.razorpay) {
+          console.log("razorpay working")
+          razorpay( response.bill)
+        }
+      
+            }
+        })
     
+
+    }
+    </script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        function razorpay( bill) {
+       console.log("razorpay function started");
+       let keyId = document.getElementById("keyId").value
+       console.log(keyId);
+       let options = {
+         "key": keyId, // Enter the Key ID generated from the Dashboard
+         "amount": bill * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+         "currency": "INR",
+         "name": "HomeDecor",
+         "description": "Add money to wallet",
+         "image": "",
+         "handler": function(response) {
+           RazoverifyPayment(response)
+         },
+         "prefill": {
+           "name": "HomeDecor",
+           "email": "HomeDecor12345",
+           "contact": "+91 8590909835"
+         },
+         "notes": {
+           "address": "HomeDecor,HustleHub Techpark,Somasundara palaya,Hsr Layout,Bangalore, Karnataka, India"
+         },
+         "theme": {
+           "color": "#feffe0"
+         }
+       }
+       console.log("heloo");
+       let rzp1 = new Razorpay(options);
+       console.log("heloo" + rzp1);
+       rzp1.open();
+     }
+   
+     function RazoverifyPayment(payment) {
+       console.log("razorpayverify");
+       location.replace('/user-wallet')
+   
+       // $.ajax({
+       //   url: '/userhome/razo-verify-payment',
+       //   data: {
+       //     payment,
+       //     order
+       //   },
+       //   method: 'post',
+       //   success: (response) => {
+       //     if (response.status) {
+       //       console.log("succes")
+       //       location.href = '/show-confirm-order'
+       //     } else {
+       //       // need to render payment faild page
+       //       location.href = '/razorpayPaymentFailed'
+       //     }
+       //   }
+       // })
+     }
+   
+   </script>
