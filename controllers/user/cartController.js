@@ -356,8 +356,7 @@ module.exports = {
           
             const orderSaved = await newOrder.save();
             const cartUpdated = await User.findOneAndUpdate({ _id: user._id }, { $set: { cart: [] } }, { new: true });
-            // res.redirect('/show-confirm-order')
-            res.json({codSuccess:true})
+            res.redirect('/show-confirm-order')
              
           }else if(paymentMode == 'Razorpay'){
             const newOrder = createOrders(cart, paymentMode, address, orderBill);

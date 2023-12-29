@@ -99,7 +99,6 @@
             success: (response) => {
                 if(response.codSuccess){
                     console.log("COD working");
-                    location.replace(('/show-confirm-order'))
                 }else if (response.razorpay) {
           console.log("razorpay working")
           razorpay(response.order, response.bill)

@@ -31,15 +31,51 @@ app.set('views', ['views','views/partials','views/users','views/admin']);
 
 // Load static files
 app.use(express.static(path.join(__dirname, 'public')));
-// app.use(logger('dev'));
+app.use(logger('dev'));
 
 // Parse application
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// User session middleware configuration
+const userSessionConfig = {
+    secret: 'user-secret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        path: '/',
+        maxAge: 6000000,
+        httpOnly: true,
+    },
+    store: store
+};
+
+// Admin session middleware configuration
+const adminSessionConfig = {
+    secret: 'admin-secret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        path: '/admin',
+        maxAge: 6000000,
+        httpOnly: true,
+    },
+    store:store
+};
+
+// Custom middleware to conditionally apply session based on path
+const sessionMiddleware = (req, res, next) => {
+    if (req.path.startsWith('/admin')) {
+        session(adminSessionConfig)(req, res, next);
+    } else {
+        session(userSessionConfig)(req, res, next);
+    }
+};
+
 app.use(nocache());
 
-app.use(session({ secret: 'secret', cookie: { maxAge: 6000000 }, resave: false, saveUninitialized: true }));
+// Apply session middleware
+app.use(sessionMiddleware);
 
 // Apply user session middleware for user routes
 app.use('/', userRouter);

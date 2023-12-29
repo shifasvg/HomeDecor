@@ -20,7 +20,7 @@
 const err404handle = (req,res,next)=>{
     const error = new Error(`Not Found: ${req.originalUrl}`)
     res.status(404);
-    // console.log(error.message)
+    console.log(error.message)
     next(error);
 };
 
@@ -28,6 +28,7 @@ const err404handle = (req,res,next)=>{
 
 const errorHandler = (err,req,res,next)=>{
     const statusCode =res.statusCode == 200? 500: res.statusCode;
+    console.log("statuscode ="+statusCode)
     res.status(statusCode);
     if (req.originalUrl.startsWith('/admin')) {return res.render('admin/adminErrorPage')}
     else{

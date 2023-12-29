@@ -22,7 +22,7 @@ loadProfile: async (req,res) => {
             model: 'Product',
           });
 
-        
+          console.log("usrPfileDataaaaa"+userProfileData)
       const userInfo = userProfileData;
         res.render('users/profile',{
             user,

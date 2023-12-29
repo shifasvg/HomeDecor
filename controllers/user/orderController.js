@@ -1,5 +1,5 @@
 const Order = require('../../models/orderModel');
-const User = require('../../models/userModel');
+const { User } = require('../../models/userModel');
 const Category = require('../../models/categoryModel');
 const Product = require('../../models/productModel');
 const mongoose = require('mongoose');
@@ -40,9 +40,8 @@ module.exports = {
     },
     
     cancelOrder: async(req,res) => {
-        try { 
+        try {
             const userData = req.session.userData;
-          
     const id = req.body.id;
     const mop = req.body.mop;
     const refund = parseInt(req.body.refund);
@@ -51,31 +50,16 @@ module.exports = {
       'items._id': id,
     };
     const updateOrderStatus = { $set: { 'items.$.orderStatus': 'Cancelled by customer' } };
-  
-    if(mop == "Razorpay" || "Wallet"){
-    
-      const result = await Order.findOneAndUpdate(orderQuery, updateOrderStatus);
-      await User.findByIdAndUpdate({ _id: userData._id }, { $inc: { wallet: refund } });
-      const result2 = await Product.findOneAndUpdate(
-        { _id: result.items[0].productId },
-        { $inc: { stock: result.items[0].quantity } },
-        { new: true }
-      );
-     
-      res.json(result2);
-    }else{
-      
-      let result = await Order.findOneAndUpdate(orderQuery, updateOrderStatus);
-      let result2 = await Product.findOneAndUpdate(
-        { _id: result.items[0].productId },
-        { $inc: { stock: result.items[0].quantity } }
-      );
-      res.json(result2);
-    }
-
+    const result = await Order.findOneAndUpdate(orderQuery, updateOrderStatus);
+    const result2 = await Product.findOneAndUpdate(
+      { _id: result.items[0].productId },
+      { $inc: { stock: result.items[0].quantity } }
+    );
+    res.json(result2);
         } catch (error) {
             console.log(error.message);
-            res.status(error.status || 500).send(error.message);
+            const statusCode = error.status || 500;
+            res.status(statusCode).send(error.message);
         }
     },
 
