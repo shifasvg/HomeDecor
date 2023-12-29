@@ -341,7 +341,6 @@ postSignIn: async (req,res) => {
 try {
     
     const {email,password} = req.body;
-console.log(email,password)
     //first checks inputs are not empty 
     if(password !== '' && email !== ''){
         const userData = await usersCollection.findOne({email});
@@ -391,9 +390,7 @@ signOutUser: async (req,res) => {
         // Example in user route
 
         if(req.session.user){
-            console.log('user logout - Before destroy:', req.session);
            req.session.destroy();
-        console.log('AFTER user logout - Before destroy:', req.session);
         return res.redirect('/signin?userMessage=you have been Logged Out!')
         }
 
@@ -868,5 +865,21 @@ console.log(req.session.user+"haiiiiii")
         
           },
           
+          loadAbout : async(req,res)=> {
+            try {
+                let userAlertmsg;
+                let user;
+               let userData = req.session.userData;
+                if(req.query.userMessage || req.session.user || req.session.userData){
+                    userAlertmsg = req.query.userMessage
+                    user= req.session.user
+                }   
+                res.render('users/about',{userAlertmsg,userData})
+            } catch (error) {
+                console.log(error.message);
+                res.status(error.status || 500).send(error.message);
+            }
+          }
+
 }
 

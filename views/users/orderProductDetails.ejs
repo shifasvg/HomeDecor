@@ -61,14 +61,19 @@
 
                                 <% if (product.orderStatus == 'Cancelled by seller') { %>
                                     <p style="font-weight: 700;">Order has been cancelled by seller</p>
-                                    <%}else if(product.orderStatus == 'Cancelled by customer'){%>
+                                    <%}else if(product.orderStatus == 'Cancelled by customer' && orderedPrd.paymentMode == 'Cash on delivery'){%>
                                         <p style="font-weight: 700;">Order has been cancelled</p>
-                                    <% } else if (product.orderStatus == 'Processed' || product.orderStatus == 'Confirmed' || product.orderStatus == 'Order placed' || product.orderStatus == 'Shipped') { %>
+                                    <% }else if(product.orderStatus == 'Cancelled by customer' && orderedPrd.paymentMode == 'Razorpay' || orderedPrd.paymentMethod == 'Wallet'){%>
+                                      <p style="font-weight: 700;">Order has been cancelled <br> and Money has been credited to wallet</p>
+                                  <% }
+                                    
+                                    else if (product.orderStatus == 'Processed' || product.orderStatus == 'Confirmed' || product.orderStatus == 'Order placed' || product.orderStatus == 'Shipped') { %>
                                         <p>Do you want to cancel?</p>
                                     <button type="button" class="btn" onclick="cancel('<%= product._id %>','<%= orderedPrd.paymentMode %>','<%= product.quantity * product.price %>')">Cancel</button>
                                     <% }else if (product.orderStatus == 'Delivered') { %>
                                     <button type="button" class="btn" onclick="returnOrder('<%= product._id %>')">Return</button>
-                                    <%}else if (product.orderStatus == 'Return initiated'){%>
+                                    <%}
+                                    else if (product.orderStatus == 'Return initiated'){%>
                                     <p>Return has bee initiated <br> refund will be initiate <br> after seller accept the return</p>
                                     <%}%> 
 
@@ -130,27 +135,29 @@
                         'Cancelled!',
                         'Your Order has been cancelled.',
                         'success'
-                      )
+                      ).then((result) => {
+                if (result.isConfirmed) {
+                  location.reload();
+                }})
                     })
                     .catch(error => {
                       console.log(error);
                     });
-                  location.reload();
+                  // location.reload();
                 }
         
               })
-      } else if (MOP == "Razorpay") {
+      } else if (MOP == "Razorpay" || MOP == "Wallet") {
       Swal.fire({
         title: 'Are you sure?',
         text: "You want to cancel this product from Orders! ",
         icon: 'warning',
         showCancelButton: true,
-        showDenyButton: true,
+      
         confirmButtonColor: '#e00041',
         cancelButtonText: 'Dont cancel',
         cancelButtonColor: '#00964e',
-        denyButtonColor: '#e00041',
-        denyButtonText: `Refund to Account`,
+        
         confirmButtonText: 'Refund to Wallet'
       }).then((result) => {
         if (result.isConfirmed) {
@@ -161,7 +168,7 @@
               },
               body: JSON.stringify({
                 id: id,
-                refundOption: 'wallet',
+             
                 mop: MOP,
                 refund: refund
               })
@@ -171,15 +178,18 @@
             })
             .then(data => {
               Swal.fire(
-                'Cancelled!',
-                'Your Order has been cancelled.',
-                'success'
-              )
+                        'Cancelled!',
+                        'Your Order has been cancelled.',
+                        'success'
+                      ).then((result) => {
+                if (result.isConfirmed) {
+                  location.reload();
+                }})
             })
             .catch(error => {
               console.log(error);
             });
-          location.reload();
+         
         } else if (result.isDenied) {
           fetch("/cancelOrder", {
               method: "POST",
@@ -218,26 +228,27 @@
                 const id = itemId;
                 Swal.fire({
                         title:"Are you sure?",
-                        text:"Do you want to return this order!",
+                        text:"Do you want to return this order! refund will be credited to wallet",
                         icon:"warning",
                         showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonText: 'No, keep it',
                 cancelButtonColor: '#3085d6',
                 confirmButtonText: 'Yes, return it!'
-                    }).then((result) => {
+                    }).then((result) => { 
                 if (result.isConfirmed) {
                   fetch(`/returnOrder/${id}`, {
                       method: "PATCH",  
                     })
                     .then(data => {
                         console.log("Cancellation success data", data);
-                        location.reload()
+                        // location.reload()
+                        
                     })
                     .catch(error => {
                       console.log(error);
                     });
-                  location.reload();
+                  // location.reload();
                 }
         
               })
