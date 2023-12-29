@@ -68,5 +68,6 @@ router.get('/user-orders', middle.isBlocked, middle.loggedIn, orderController.lo
 router.post('/cancelOrder', orderController.cancelOrder);
 router.patch('/returnOrder/:id', orderController.returnOrder);
 router.get('/orderProductDetails',orderController.orderProductDetails);
-
+//---------About page -------------//
+router.get('/about',userController.loadAbout);
 module.exports=router;

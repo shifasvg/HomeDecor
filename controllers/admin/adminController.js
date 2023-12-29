@@ -140,12 +140,9 @@ postAdminSignin : async (req,res) => {
 adminSignout : async (req,res) => {
 
     try {
-    
 
-        console.log("admin logout - Before destroy:", req.session);
         // Destroy only the admin session
        req.session.destroy();
-        console.log("after admin logout:", req.session)
         res.redirect('/admin/signin?message=admin logged out successfully!');
     
     } catch (error) {
@@ -633,7 +630,11 @@ editStatus : async (req,res) => {
         { _id: orderId, 'items._id': itemOrderId },
         { $set: { 'items.$.orderStatus': orderStatus } }
       );
-    
+      if (!status) {
+        // Handle the case where no matching document was found
+        console.log("No matching document found");
+        return res.status(404).send("No matching document found");
+      }
       if (orderStatus == "Delivered") {
         await Product.findOneAndUpdate(
           { _id: productId },

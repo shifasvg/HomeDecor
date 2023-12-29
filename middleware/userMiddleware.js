@@ -21,7 +21,6 @@ const loggedIn = async (req,res,next) => {
             return res.status(500).send("Internal Server Error");
         }
     }else {
-        console.log("if no session this will work")
         return res.redirect('/signin?userMessage=Please sign in for Accessibility');
     }
 
@@ -32,7 +31,7 @@ const notLogged = async (req,res,next) => {
     try {
         if (req.session.user) {
             const user = req.session.user;
-            console.log(req.session.user+"testing")
+         
             res.redirect(`/?userMessage=You are already signed in&user=${user}`); // User is logged in, redirect with a message
         } else {
             next(); // User is not logged in, proceed to the next middleware

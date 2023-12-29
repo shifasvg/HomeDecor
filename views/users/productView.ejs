@@ -57,7 +57,7 @@
                                     <!-- Other product details -->
                                
                                 
-
+<!-- 
                                 <div class="single-product-reviews">
                                     <i class="fa fa-star active"></i>
                                     <i class="fa fa-star active"></i>
@@ -65,7 +65,7 @@
                                     <i class="fa fa-star active"></i>
                                     <i class="fa fa-star-o"></i>
                                     <a class="review-link" href="#">(1 customer review)</a>
-                                </div>
+                                </div> -->
                                 <div class="single-product-price">
                                     <span class="price new-price"><% if (product.discount !== "0%") { %><span style="color: red; font-size: 22px;font-weight: 600;">-<%= product.discount %>  </span> <% } %>₹<%= product.price %></span>
                                     <% if (product.price !== product.mrp) { %> <span class="regular-price">M.R.P<%= product.mrp %></span> <% } %>
@@ -114,7 +114,6 @@
 
                                 <div class="wishlist-compare-btn">
                                     <a href="#" class="wishlist-btn">Add to Wishlist</a>
-                                    <a href="#" class="add-compare">Compare</a>
                                 </div>
                                 <div class="product-meta">
                                     <% if (product && product.category.active===true) { %>
@@ -132,7 +131,7 @@
                                 <div class="single-product-sharing">
                                     <h3>Share this product</h3>
                                     <ul>
-                                        <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                                        <li><a href="https://twitter.com/login"><i class="fa fa-twitter"></i></a></li>
                                         <li><a href="#"><i class="fa fa-facebook"></i></a></li>
                                         <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
                                         <li><a href="#"><i class="fa fa-pinterest"></i></a></li>
