@@ -52,6 +52,9 @@ loadAdminDashboard: async (req,res) => {
         months[month]++;
       });
 
+      console.log('orders',months)
+
+
       const paymentModeStats = await Order.aggregate([
         {
           $group: { _id: '$paymentMode', count: { $sum: 1 } },
@@ -83,7 +86,8 @@ loadAdminDashboard: async (req,res) => {
           totalBill: orderSum[0].totalBill,
           orderCount,
           userCount,
-          totalQuantity: quantitySum[0].totalProducts,orders1});
+          totalQuantity: quantitySum[0].totalProducts,
+          orders1});
     } catch (error) {
         console.log(error.message);
         const statusCode = error.status || 500;
@@ -668,15 +672,26 @@ orderReport: async (req, res) => {
   }
 },
 
-downloadSales: async(req,res)=> {
+downloadSales: async (req, res) => {
   try {
-    const orders = await fetchDataForSalesReport();
+   
+
+    // Header row for the CSV
+    const header = [
+      'Product Name',
+      'Product ID',
+      'Quantity',
+      'Bill',
+      'Order Status',
+      'Payment Mode',
+      'Order Date',
+      'Order Bill'
+    ];
 
     // Convert the data to CSV format
-    const csvContent = orders.map(order => {
+    const csvContent = `${header.join(',')}\n${Order.map(order => {
       return order.items.map(item => {
         return [
-          item.images,
           item.productname,
           item._id,
           item.quantity,
@@ -687,17 +702,18 @@ downloadSales: async(req,res)=> {
           order.orderBill
         ].join(',');
       }).join('\n');
-    }).join('\n');
+    }).join('\n')}`;
 
     // Save the CSV content to a file
     fs.writeFileSync('public/sales_report.csv', csvContent);
 
     // Respond with the file download
     res.download('public/sales_report.csv');
-  res.redirect('/admin/report')
+    res.redirect('/admin/report');
   } catch (error) {
     console.log(error.message);
   }
 }
+
 
 }

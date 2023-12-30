@@ -13,11 +13,13 @@
           <h6 class="text-left mb-0">Sales report</h6>
 
         <h6><a onclick="downloadSalesReport()" class="btn btn-primary">download</a></h6>
+        <h6><a onclick="pdf('tablePrint')" class="btn btn-primary">pdf</a></h6>
+        
         </div>
 
         
         <div class="card-body px-0 pt-0 pb-2">
-          <div class="table-responsive p-0">
+          <div class="table-responsive p-0" id="tablePrint">
             <table class="table table-hover text-center">
               <thead style="background-color: rgba(128, 128, 128, 0.788); color: white;">
                 <tr style="color: black;">
@@ -91,5 +93,16 @@
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  }
+
+  function pdf(pt) {
+    const x = document.body.innerHTML;
+    const y = document.getElementById('tablePrint').innerHTML;
+    document.body.innerHTML = y;
+    document.body.style.padding = "20px"
+    document.body.style.margin = "20px"
+
+    window.print();
+    location.reload();
   }
 </script>
