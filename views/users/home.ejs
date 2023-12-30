@@ -151,35 +151,50 @@
                     <div id="home" class="tab-pane fade active show" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
                         <div class="row">
                            
-
+                            <% if (popular && popular.length > 0) { %>
+                                                    
+                                <% popular.forEach(function(product) { %>
                             <div class="col-lg-3 col-md-4 col-sm-6">
                                 <!--  Single Grid product Start -->
                                 <div class="single-grid-product mb-40">
                                     <div class="product-image">
-                                        <div class="product-label">
-                                            <span>-20%</span>
-                                        </div>
-                                        <a href="single-product.html">
-                                            <img src="assets/images/product/product-1.jpg" class="img-fluid" alt="">
-                                            <img src="assets/images/product/product-2.jpg" class="img-fluid" alt="">
-                                        </a>
+                                        
+                                        
+                                        <% if (product.images.length === 1) { %>
+                                            <a href="/product-view?id=<%=product._id%>">
+                                                <img src="/images/<%= product.images[0].filename %>" class="img-fluid" alt="">
+                                            </a>
+                                        <% } else { %>
+                                            <a href="/product-view?id=<%=product._id%>">
+                                                <% if (product.stock===0) { %>
+                                                    <div class="out-of-stock-message">Out of Stock</div>
+                                                <% } %>
+                                                <img src="/images/<%= product.images[0].filename %>" class="img-fluid" alt="">
+                                                <img src="/images/<%= product.images[1].filename %>" class="img-fluid" alt=""> 
+                                            </a>
+                                        <% } %>
 
                                         <div class="product-action">
                                             <ul>
-                                                <li><a href="cart.html"><i class="fa fa-cart-plus"></i></a></li>
+                                                <!-- <li> <a href="#" onclick="addtocart('<%= product._id %>')"><i class="fa fa-cart-plus"></i></a></li>
                                                 <li><a href="#quick-view-modal-container" data-bs-toggle="modal" title="Quick View"><i class="fa fa-eye"></i></a></li>
-                                                <li><a href="wishlit.html"><i class="fa fa-heart-o"></i></a></li>
+                                                <li><a href="wishlit.html"><i class="fa fa-heart-o"></i></a></li> -->
                                             </ul>
                                         </div>
                                     </div>
                                     <div class="product-content">
-                                        <h3 class="title"> <a href="single-product.html">Stylish Design Chair</a></h3>
-                                        <p class="product-price"><span class="discounted-price">$190.00</span> <span class="main-price discounted">$230.00</span></p>
+                                        <h3 class="title"> <a href="single-product.html"><%=product.productname%></a></h3>
+                                        <p class="product-price"><span class="discounted-price">Rs.<%=product.price%></span> <% if (product.price !== product.mrp){%><span class="main-price discounted">M.R.P <%=product.mrp%></span>  
+                                        <span>(<%= product.discount %> off)</span><% } %></p>
                                     </div>
+                                    
                                 </div>
                                 <!--  Single Grid product End -->
                             </div> 
-
+                            <% }) %>
+                            <% } else { %>
+                                <h4 class="text-center text-danger">No Products Found</h4>
+                                <% } %>
                           
                         </div>
                     </div>
