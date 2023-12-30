@@ -83,6 +83,9 @@
                                 <div class="row">
                                     <div class="col-md-6 col-12 mb-25">
                                         <input type="text" name="coupon" placeholder="Coupon Code" id="form3Examplea2">
+                                        <button class="remove-coupon-btn" onclick="removeCoupon('<%=cart._id%>','<%=cartBill%>')">
+                                            <i class="fa fa-times"></i>
+                                        </button>
                                     </div>
                                     <div class="col-md-6 col-12 mb-25">
                                         <button type="submit" class="btn" onclick="couponApply('<%=cart._id%>','<%=cartBill%>')">Apply Code</button>
@@ -209,6 +212,9 @@ function updateCartItem(productId, newQty) {
 </script>
 
 <script>
+
+   
+
    function couponApply(id1, bill1) {
     let coupon = document.getElementById("form3Examplea2").value;
     const bill = bill1;
@@ -271,6 +277,33 @@ function updateCartItem(productId, newQty) {
         });
     }
 }
+
+function removeCoupon(id1, bill1){
+        document.getElementById('form3Examplea2').value = '';
+        document.getElementById("validation2").innerHTML = '';
+        document.getElementById("totalBill2").innerHTML=bill1;
+        $.ajax({
+            url:'/removeCoupon',
+            method:'GET',
+            success: function(response){
+                if(response.success){
+                    console.log('haiiid')
+                    const couponDiscountElement = document.getElementById("couponDiscount");
+                    const couponValueElement = document.getElementById("couponValue");
+  
+
+    
+        couponDiscountElement.innerHTML = '';
+        couponValueElement.innerHTML = '';
+       
+        
+        console.log('coupon removed')
+    
+                }
+            }
+        })
+
+    }
 
   </script>
   

@@ -489,6 +489,19 @@ module.exports = {
           console.log(error.message);
           res.status(error.status || 500).json({ success: false, error: error.message });
         }
+      },
+
+      removeCoupon: async (req,res) => {
+        try {
+          delete req.session.appliedCoupon;
+          delete req.session.orderBill;
+          delete req.session.deduction;
+  console.log("reomveddg")
+          res.json({ success: true });
+        } catch (error) {
+          console.log(error.message);
+          res.status(error.status || 500).json({ success: false, error: error.message });
+        }
       }
       
 

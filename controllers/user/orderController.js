@@ -62,6 +62,20 @@ module.exports = {
         { new: true }
       );
      
+      const walletTrasaction = {
+        amount:refund,
+        type:'credited',
+        description:'Product cancelled! Money refund to wallet',
+        product:result2.productname,
+        date: new Date()
+    }
+     const updateWalletTrasaction = await User.findByIdAndUpdate(
+        { _id: userData._id },
+        { $push: { walletTransactions: walletTrasaction } },
+        { new: true }
+      );
+    await updateWalletTrasaction.save();
+
       res.json(result2);
     }else{
       
@@ -83,19 +97,49 @@ module.exports = {
         try {
             const userData = req.session.userData;
             const id = req.params.id;
-            console.log("productitemid",id)
-            const result = await Order.findOneAndUpdate(
-              {
-                userId: userData._id,
-                'items._id': id,
-              },
-              {
-                $set: { 'items.$.orderStatus': 'Return initiated' },
-              },
+            const refund = parseInt(req.body.refund);
+            const orderQuery = {
+              userId: userData._id,
+              'items._id': id,
+            };
+
+            const updateOrderStatus = { $set: { 'items.$.orderStatus': 'Return completed' } };
+            const result = await Order.findOneAndUpdate(orderQuery, updateOrderStatus);
+            await User.findByIdAndUpdate({ _id: userData._id }, { $inc: { wallet: refund } });
+            const result2 = await Product.findOneAndUpdate(
+              { _id: result.items[0].productId },
+              { $inc: { stock: result.items[0].quantity } },
               { new: true }
             );
+          
+
+           const walletTrasaction = {
+            amount:refund,
+            type:'credited',
+            description:'Product returned! Money refund to wallet',
+            product:result2.productname,
+            date: new Date()
+        }
+         const updateWalletTrasaction = await User.findByIdAndUpdate(
+            { _id: userData._id },
+            { $push: { walletTransactions: walletTrasaction } },
+            { new: true }
+          );
+        await updateWalletTrasaction.save();
+
+            res.json(result2);
+            // const result = await Order.findOneAndUpdate(
+            //   {
+            //     userId: userData._id,
+            //     'items._id': id,
+            //   },
+            //   {
+            //     $set: { 'items.$.orderStatus': 'Return initiated' },
+            //   },
+            //   { new: true }
+            // );
         
-            res.redirect('/user-orders');
+            // res.redirect('/user-orders');
           } catch (error) {
             console.log(error.message);
           }

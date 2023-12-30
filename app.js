@@ -31,7 +31,7 @@ app.set('views', ['views','views/partials','views/users','views/admin']);
 
 // Load static files
 app.use(express.static(path.join(__dirname, 'public')));
-// app.use(logger('dev'));
+app.use(logger('dev'));
 
 // Parse application
 app.use(bodyParser.json());

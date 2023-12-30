@@ -97,6 +97,36 @@ const sendEmailOTP= async(name, email, generatedOTP) => {
     }
   };
 
+// ================Get all active categories========================
+
+const getCategory = async function () {
+    try {
+      const categories = await categoryCollection.find({ active: true });
+      return categories;
+    } catch (error) {
+      throw new Error('Could not find categories');
+    }
+  };
+
+  function getSortQuery (sortType) {
+    let sortQuery = { createdAt: -1 };
+    switch (sortType) {
+      case '1':
+        sortQuery = { price: 1 };
+        break;
+      case '2':
+        sortQuery = { price: -1 };
+        break;
+      case '3':
+        sortQuery = { createdAt: -1 };
+        break;
+      case '4':
+        sortQuery = { createdAt: 1 };
+        break;
+    }
+    return sortQuery;
+  }
+
 module.exports = {
 
 //rendering home page for user
@@ -698,9 +728,12 @@ shopView : async (req, res) => {
         let userAlertmsg;
         let user;
        let userData = req.session.userData;
-        if(req.query.userMessage || req.session.user || req.session.userData){
+       let result
+        if(req.query.userMessage || req.session.user || req.session.userData|| req.query.result){
             userAlertmsg = req.query.userMessage
             user= req.session.user
+            result = req.query.result
+           
         }   
         const userInfo = await usersCollection.findOne({email:user});
        const categories = await categoryCollection.find({
@@ -759,7 +792,15 @@ userAlertmsg, user, userData,userInfo,currentproduct, totalpages,currentpage})
     const startindex = (currentpage - 1) * itemsperpage;
     const endindex = startindex + itemsperpage;
     const totalpages = Math.ceil(cproducts.length / 3);
-    const products = cproducts.slice(startindex,endindex);
+    
+    let products;
+
+    if (!result) {
+        products = cproducts.slice(startindex, endindex);
+    } else {
+        products = await productCollection.find({_id:result});
+        console.log("inshop",products)
+    }
 
       res.render('users/shop', {
       
@@ -879,7 +920,117 @@ console.log(req.session.user+"haiiiiii")
                 console.log(error.message);
                 res.status(error.status || 500).send(error.message);
             }
-          }
+          },
+
+    search: async (req,res)=> {
+        try {
+
+            let userAlertmsg;
+            let user;
+           
+            if(req.query.userMessage || req.session.user ){
+                userAlertmsg = req.query.userMessage
+                user= req.session.user
+            }   
+            const userInfo = await usersCollection.findOne({email:user});
+
+            const searchText = req.query.search;
+            console.log("search",searchText)
+
+            const result = await productCollection.find({
+              $and: [
+                { isDeleted: false },
+                {
+                  $or: [
+                    { productname: { $regex: searchText, $options: 'i' } },
+                   
+                  ],
+                },
+              ],
+            }).populate('category');
+        
+            const categories = await getCategory();
+            if (req.session.user) {
+              const user = req.session.userData;
+        
+              const userData = await usersCollection.findById(user._id).populate({
+                path: 'cart.prod_id',
+                model: 'Product',
+                populate: {
+                  path: 'category',
+                  model: 'Category',
+                },
+              });
+              console.log("Resulffj",result)
+              res.redirect(`/shop?result=${result[0]._id}`);
+            //   res.render('users/shop', { userData, categories, products: result, user, userAlertmsg, userInfo });
+            } else {
+              res.render('users/shop', { categories, products: result, userAlertmsg, userInfo });
+            }
+        } catch (error) {
+            console.log(error.message);
+            res.status(error.status || 500).send(error.message);
+        }
+    },
+
+    displaySort : async (req,res) => {
+        try {
+    //const categoryId = req.query.id;
+    let userAlertmsg;
+    let user;
+   let userData = req.session.userData;
+    if(req.query.userMessage || req.session.user || req.session.userData|| req.query.result){
+        userAlertmsg = req.query.userMessage
+        user= req.session.user
+    }   
+    const userInfo = await usersCollection.findOne({email:user});
+    let page = 1;
+
+    if (req.query.page) {
+      page = req.query.page;
+    }
+    const limit = 3;
+
+    const minPrice = parseFloat(req.query.minPrice) || 0; // Minimum price
+    const maxPrice = parseFloat(req.query.maxPrice) || Number.MAX_VALUE; // Maximum price
+
+    const categoriesPromise = await getCategory();
+    let  productsPromise;
+    
+      
+      productsPromise = productCollection.find({
+        isDeleted: false,
+        price: { $gte: minPrice, $lte: maxPrice },
+      })
+        .sort(getSortQuery(req.query.sort))
+        
+        
+   
+    const [ products, categories] = await Promise.all([
+      productsPromise,
+      categoriesPromise,
+    ]);
+   
+    const itemsperpage = 3;
+    const currentpage = parseInt(req.query.page) || 1;
+    const startindex = (currentpage - 1) * itemsperpage;
+    const endindex = startindex + itemsperpage;
+    const totalpages = Math.ceil(products.length / 3);
+
+  console.log('hello',products)    
+
+  res.render('users/shop', {
+      
+    categories: categories,
+products,
+userAlertmsg, user,userData,userInfo, totalpages,currentpage})
+    
+    
+        } catch (error) {
+            console.log(error.message);
+            res.status(error.status || 500).send(error.message);
+        }
+    }
 
 }
 

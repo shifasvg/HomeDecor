@@ -44,46 +44,54 @@
                                                   <!-- New Address Form (Initially Hidden) -->
                                             <div id="new-address-form" class="new-address-form" style="display: none;">
                                                 <h4>Add a new address</h4>
-                                                <form action="/add-new-address?id=<%=userData._id%>" method="post">
+                                                <form action="/add-new-address?id=<%=userData._id%>" method="post" id="addNewAddressForm">
                                                     <!-- Address input fields go here -->
                                                     <div class="col-lg-6 col-12 mb-30">
                                                         <label for="address-name">Name:</label>
                                                         <input type="text" name="name" id="address-name" >
+                                                        <div class="error" id="address-nameErr"></div>
                                                     </div>
 
                                                     <div class="col-lg-6 col-12 mb-30">
                                                         <label for="address-mobile">Mobile:</label>
                                                         <input type="text" name="mobile" id="address-mobile" >
+                                                        <div class="error" id="address-mobileErr"></div>
                                                     </div>
 
                                                     <div class="col-lg-6 col-12 mb-30">
                                                         <label for="address-pincode">pincode:</label>
                                                         <input type="text" name="pincode" id="address-pincode" >
+                                                        <div class="error" id="address-pincodeErr"></div>
                                                     </div>
 
                                                     <div class="col-lg-6 col-12 mb-30">
                                                         <label for="address-address">Address:</label>
                                                         <input type="text" name="address" id="address-address" >
+                                                        <div class="error" id="address-addressErr"></div>
                                                     </div>
 
                                                     <div class="col-lg-6 col-12 mb-30">
                                                         <label for="address-district">District:</label>
                                                         <input type="text" name="district" id="address-district" >
+                                                        <div class="error" id="address-districtErr"></div>
                                                     </div>
 
                                                     <div class="col-lg-6 col-12 mb-30">
                                                         <label for="address-state">State:</label>
                                                         <input type="text" name="state" id="address-state" >
+                                                        <div class="error" id="address-stateErr"></div>
                                                     </div>
 
                                                     <div class="col-lg-6 col-12 mb-30">
                                                         <label for="address-landmark">Landmark:</label>
                                                         <input type="text" name="landmark" id="address-landmark" >
+                                                        <div class="error" id="address-landmarkErr"></div>
                                                     </div>
 
                                                     <div class="col-lg-6 col-12 mb-30">
                                                         <label for="address-alternativeNumber">Alternative Phone:</label>
                                                         <input type="text" name="AlternativeNumber" id="address-alternativeNumber" >
+                                                        <div class="error" id="address-alternativeNumberErr"></div>
                                                     </div>
 
                                                     <button type="submit" id="save-address-btn" class="save-change-btn">Save</button>
@@ -197,10 +205,24 @@
         <%- include('partials/userFooter.ejs') %>
 
 
-    <script>
-    //add new address 
-
-
-
-
-        </script>
+        <script>
+            const addNewAddressForm = document.getElementById('addNewAddressForm');
+          
+          // Attach an event listener to the form's submit event
+          addNewAddressForm.addEventListener('submit', function (event) {
+            // Prevent the default form submission
+            event.preventDefault();
+          
+            // Call the signupValidate function
+            const isValid = addressValidate();
+          
+            // If validation fails, do not submit the form
+            if (!isValid) {
+              return false;
+            } else {
+                addNewAddressForm.submit();
+            }
+            // If validation passes, you can manually submit the form
+            // This will trigger the actual form submission to /register
+          });
+          </script>

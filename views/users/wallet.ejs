@@ -58,75 +58,52 @@
           </div>
       </div>
       <div class="col-md-3 col-sm-6">
-         
-        <!-- <div class="col-md-8">
+       
+         <!-- wallet transactions table -->
+         <div class="col-md-8">
             <div>
                 <table class="table table-borderless">
                     <thead>
                         <tr>
                             <th class="text-uppercase font-10 weight-600 grey-color-2">Transactions</th>
-                            <th class="text-uppercase font-10 weight-600 purple-color-2 text-end">View All</th>
+                            <!-- <th class="text-uppercase font-10 weight-600 purple-color-2 text-end">View All</th> -->
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>
-                                <div class="d-flex flex-row">
-                                    <div class="d-flex flex-row justify-content-center align-items-center orange-color square round-corner-small light-orange-bg-color font-14">
-                                        <i class="fas fa-long-arrow-alt-up"></i>
-                                    </div>
-                                    <div class="d-flex flex-column ps-2">
-                                        <span class="font-14 weight-700 purple-color-2">Sent BTE</span>
-                                        <span class="font-10 weight-400 purple-color-2">12 Nov, 2020</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex flex-column align-items-end">
-                                    <span class=" font-16 weight-700 orange-color ">-$1,289.00</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="d-flex flex-row ">
-                                    <div class="d-flex flex-row justify-content-center align-items-center square round-corner-small light-purple-bg-color purple-color-2 font-14 ">
-                                        <i class="fas fa-long-arrow-alt-down "></i>
-                                    </div>
-                                    <div class="d-flex flex-column ps-2 ">
-                                        <span class="font-14 weight-700 purple-color-2 ">Received USDT</span>
-                                        <span class="font-10 weight-400 purple-color-2 ">12 Nov, 2020</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex flex-column align-items-end ">
-                                    <span class="font-16 weight-700 purple-color-2 ">-$1,289.00</span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="d-flex flex-row ">
-                                    <div class="d-flex flex-row justify-content-center align-items-center square round-corner-small light-orange-bg-color orange-color font-14 ">
-                                        <i class="fas fa-long-arrow-alt-up "></i>
-                                    </div>
-                                    <div class="d-flex flex-column ps-2 ">
-                                        <span class="font-14 weight-700 purple-color-2 ">Sent XRP</span>
-                                        <span class="font-10 weight-400 purple-color-2 ">12 Nov, 2020</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex flex-column align-items-end ">
-                                    <span class="font-16 weight-700 orange-color ">-$1,289.00</span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div> -->
+        <% if (limitedTransactions.length > 0) { %>
+            <% limitedTransactions.forEach(function(transaction, index) { %>
+                <tr>
+                    <td>
+                        <div class="d-flex flex-row">
+                          <span><%=index + 1%></span>
+                            <div class="d-flex flex-column ps-2" style="text-align: left;">
+                                <span class="font-14 weight-700 purple-color-2"><%=transaction.description%></span>
+                                <span class="font-13 weight-400 purple-color-2"><%= transaction.date.toDateString() %></span>
+                                <span><%if(transaction.product){%>
+                               Product name : <%=transaction.product%>
+                                    <%}%>
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-column align-items-end">
+                            <span class=" font-16 weight-700 orange-color ">₹<%=transaction.amount%></span>
+                        </div>
+                    </td>
+                </tr>
+            <% }); %>
+        <% } else { %>
+           
+            <tr>
+                <td colspan="7">No transactions found</td>
+            </tr>
+        <% } %>
+    </tbody>
+</table>
+</div>
+</div> 
+<!-- end of wallet transactions table -->
 
       </div>
 </div>

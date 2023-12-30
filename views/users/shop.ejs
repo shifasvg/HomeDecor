@@ -46,13 +46,10 @@
                                         <div class="toolbar-short-area d-md-flex align-items-center">
                                             <div class="toolbar-shorter ">
                                                 <label>Sort By:</label>
-                                                <select class="wide">
-                                                    <option data-display="Select">Nothing</option>
-                                                    <option value="Relevance">Relevance</option>
-                                                    <option value="Name, A to Z">Name, A to Z</option>
-                                                    <option value="Name, Z to A">Name, Z to A</option>
-                                                    <option value="Price, low to high">Price, low to high</option>
-                                                    <option value="Price, high to low">Price, high to low</option>
+                                                <select class="wide" id="sortshop" onchange="sort()">
+                                                    <option data-display="Select">Select</option>
+                                                    <option value="1">price low to high</option>
+                                                    <option value="2">price high to low</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -256,4 +253,11 @@
                     }
                 })
             }
+
+            function sort() {
+            let sort = document.getElementById("sortshop").value;
+            window.location.href = "/sort?sort=" + sort
+}
+
+            
         </script>

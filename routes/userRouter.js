@@ -40,7 +40,8 @@ router.post('/new-password-page', userController.forgotPasswordUpdate);
 router.get('/shop', middle.isBlocked, userController.shopView);
 router.get('/shop/displayCategory',userController.displayCategory);
 router.get('/product-view',middle.isBlocked,userController.productView);
-
+router.get('/search',userController.search);
+router.get('/sort',userController.displaySort);
 //-----------CartController-------------//
 router.get('/cart', middle.isBlocked, middle.loggedIn, cartController.loadCart);
 router.post('/addtocart',cartController.addToCart);
@@ -54,6 +55,7 @@ router.get('/show-confirm-order', middle.isBlocked, middle.loggedIn, cartControl
 // router.get('/razorpayPaymentFailed',cartController.razorpayPaymentFailed);
 router.get('/orderRedirect',cartController.orderSuccessRedirect);
 router.post('/applyCoupon',cartController.applyCoupon);
+router.get('/removeCoupon',cartController.removeCoupon);
 //----------User Profile----------------//
 router.get('/user-profile', middle.isBlocked, middle.loggedIn, profileController.loadProfile);
 router.post('/user-edit-profile',profileController.editProfile)

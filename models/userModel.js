@@ -50,6 +50,30 @@ const userSchema = new Schema(
       default: 0,
     },
 
+    walletTransactions:[
+      {
+        amount: {
+          type: Number,
+          required: true,
+        },
+        type: {
+          type: String,
+          enum: ['credited', 'debited'],
+          required: true,
+        },
+        description: {
+          type: String,
+          required: true,
+        },
+        product:{
+          type:String
+        },
+        date: {
+          type: Date,
+          default: Date(),
+        },
+      }
+    ],
 
 
     cart: {

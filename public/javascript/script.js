@@ -140,6 +140,95 @@ function loginValidate() {
   }
 }
 
+//validate user new address form
+function addressValidate() {
+  const name = document.getElementById('address-name').value;
+  const mobile = document.getElementById('address-mobile').value;
+  const pincode = document.getElementById('address-pincode').value;
+  const address = document.getElementById('address-address').value;
+  const district = document.getElementById('address-district').value;
+  const state = document.getElementById('address-state').value;
+  const landmark = document.getElementById('address-landmark').value;
+  const altr_number = document.getElementById('address-alternativeNumber').value;
+  let isValid = true;
+
+  if (name == '') {
+    printError('address-nameErr', 'Please enter your name!');
+    isValid = false;
+  } else {
+      printError('address-nameErr', '');
+  }
+
+  if (mobile == '') {
+    printError('address-mobileErr', 'Please enter your mobile number!');
+    isValid = false;
+  }else {
+    const regex = /^[1-9]\d{9}$/;
+    if (regex.test(mobile) === false) {
+    printError('address-mobileErr', 'Please enter a valid 10 digit mobile number!');
+    isValid = false;
+    }  else {
+      printError('address-mobileErr', '');
+    }
+}
+
+  if (pincode == '') {
+    printError('address-pincodeErr', 'Please enter your pincode!');
+    isValid = false;
+  } else {
+    printError('address-pincodeErr', '');
+  }
+
+  if (address == '') {
+    printError('address-addressErr', 'Please enter your address!');
+    isValid = false;
+  } else {
+    printError('address-addressErr', '');
+  }
+
+  if (district == '') {
+    printError('address-districtErr', 'Please enter your district!');
+    isValid = false;
+  } else {
+    printError('address-districtErr', '');
+  }
+
+  if (state == '') {
+    printError('address-stateErr', 'Please enter your state!');
+    isValid = false;
+  } else {
+    printError('address-stateErr', '');
+  }
+
+  if (landmark == '') {
+    printError('address-landmarkErr', 'Please enter your landmark!');
+    isValid = false;
+  } else {
+    printError('address-landmarkErr', '');
+  }
+
+  if (altr_number == '') {
+    printError('address-alternativeNumberErr', 'Please enter your alternative number!');
+    isValid = false;
+  } else {
+    const regex = /^[1-9]\d{9}$/;
+    if (regex.test(altr_number) === false) {
+      printError('address-alternativeNumberErr', 'Please enter a valid 10 digit alternative number!');
+      isValid = false;
+    } else {
+      printError('address-alternativeNumberErr', '');
+    }
+  }
+  
+
+  if (isValid) {
+    return true;
+  } else {
+    // Validation failed, prevent the form submission
+    return false;
+  }
+}
+
 //admin login validation
 function adminloginValidate() {
 console.log('Validation function triggered');

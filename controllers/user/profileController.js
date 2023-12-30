@@ -112,14 +112,14 @@ addNewAddress: async (req,res) => {
         console.log("iddd"+id)
         const addressData = {
           name: req.body.name,
-          mobile: Number(req.body.mobile), // Parse as number
-          pincode: Number(req.body.pincode), // Parse as number
+          mobile: req.body.mobile, 
+          pincode: req.body.pincode, 
         //   locality: req.body.locality,
           address: req.body.address,
           district: req.body.district,
           state: req.body.state,
           landmark: req.body.landmark,
-          altr_number: Number(req.body.AlternativeNumber), // Parse as number
+          altr_number: req.body.AlternativeNumber,
         };
     
         // Update user's address array
@@ -216,23 +216,31 @@ loadWallet : async (req,res) => {
             const userData = req.session.userData;
        
             const walletBalance = await User.findById(userData._id, 'wallet');
-            console.log('wallet', walletBalance);
+          
 
-        const userProfileData = await User.findById(userData._id).populate({
-            path: 'cart.prod_id',
-            model: 'Product',
-          });
+            const userProfileData = await User.findById(userData._id);
+            let limitedTransactions
+            if (userProfileData) {
+            // Sort the transactions by date if they exist
+            const sortedTransactions = userProfileData.walletTransactions.sort((a, b) => b.date - a.date);
+            limitedTransactions = sortedTransactions.slice(0, 5);
+            } else {
+            console.log("User profile data not found");
+            }
+
+          
           const keyId = process.env.rpId
           res.render('users/wallet',{
             user,
             userData,
-            userProfileData,
+            limitedTransactions,
             userAlertmsg,
             keyId,
            walletBalance: walletBalance.wallet,
+          
         });
         }else{
-            res.status(500).render("users/error");
+        res.status(500).render("users/error");
         }
 
     
@@ -249,13 +257,28 @@ addWalletMoney: async(req,res) =>{
         const bill = req.query.amount;
       const userid = req.session.userData
         // Find the user by ID
-        const user = await User.findOne({ _id: userid });
-
+        const user = await User.findOne({ _id: userid._id });
+console.log('userid',userid)
         // Update the wallet amount
         user.wallet += parseFloat(bill); 
+        
+        const walletTrasaction = {
+            amount:bill,
+            type:'credited',
+            description:'Money added to wallet',
+            date: new Date()
+        }
 
+         // Update user's address array
+         const updateWalletTrasaction = await User.findByIdAndUpdate(
+            { _id: userid._id },
+            { $push: { walletTransactions: walletTrasaction } },
+            { new: true }
+          );
+       
         // Save the updated user
         await user.save();
+        await updateWalletTrasaction.save();
             const razorpay = new Razorpay({
               key_id: 'rzp_test_1RHZRb2L3r35z5',
               key_secret: 'gpL4LQjEoyKCFx83VOLwd3E5',

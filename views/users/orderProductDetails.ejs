@@ -71,10 +71,10 @@
                                         <p>Do you want to cancel?</p>
                                     <button type="button" class="btn" onclick="cancel('<%= product._id %>','<%= orderedPrd.paymentMode %>','<%= product.quantity * product.price %>')">Cancel</button>
                                     <% }else if (product.orderStatus == 'Delivered') { %>
-                                    <button type="button" class="btn" onclick="returnOrder('<%= product._id %>')">Return</button>
+                                    <button type="button" class="btn" onclick="returnOrder('<%= product._id %>','<%= product.quantity * product.price %>')">Return</button>
                                     <%}
-                                    else if (product.orderStatus == 'Return initiated'){%>
-                                    <p>Return has bee initiated <br> refund will be initiate <br> after seller accept the return</p>
+                                    else if (product.orderStatus == 'Return completed'){%>
+                                    <p>Return has bee initiated <br> refund credited <br> to your wallet</p>
                                     <%}%> 
 
                                </div>
@@ -211,12 +211,15 @@
                 'Cancelled!',
                 'Your Order has been cancelled.',
                 'success'
-              )
+              ).then((result) => {
+                if (result.isConfirmed) {
+                  location.reload();
+                }})
             })
             .catch(error => {
               console.log(error);
             });
-          location.reload();
+        
         }
 
       })
@@ -224,13 +227,14 @@
     }
             }
         
-            function returnOrder(itemId){
+            function returnOrder(itemId,refundAmount){
                 const id = itemId;
+                const refund = refundAmount;
                 Swal.fire({
-                        title:"Are you sure?",
-                        text:"Do you want to return this order! refund will be credited to wallet",
-                        icon:"warning",
-                        showCancelButton: true,
+                title:"Are you sure?",
+                text:"Do you want to return this order! refund will be credited to wallet",
+                icon:"warning",
+                showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonText: 'No, keep it',
                 cancelButtonColor: '#3085d6',
@@ -238,16 +242,32 @@
                     }).then((result) => { 
                 if (result.isConfirmed) {
                   fetch(`/returnOrder/${id}`, {
-                      method: "PATCH",  
+                      method: "PATCH",
+                      headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                id: id,
+                refund: refund
+              })  
                     })
-                    .then(data => {
-                        console.log("Cancellation success data", data);
-                        // location.reload()
-                    })
-                    .catch(error => {
-                      console.log(error);
-                    });
-                  // location.reload();
+                    .then(response => {
+              return response.json();
+            })
+            .then(data => {
+              Swal.fire(
+                'Return completed!',
+                'Money credited to wallet.',
+                'success'
+              ).then((result) => {
+                if (result.isConfirmed) {
+                  location.reload();
+                }})
+            })
+            .catch(error => {
+              console.log(error);
+            });
+          
                 }
         
               })
