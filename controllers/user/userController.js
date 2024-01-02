@@ -140,6 +140,9 @@ loadHome : async (req,res) => {
             userAlertmsg = req.query.userMessage;
             user = req.query.user|| req.session.user;
         }
+
+        const popular = await productCollection.find().limit(8)
+
         if(req.session.user){
             const userD = req.session.userData;
             const userData = await usersCollection.findById(userD._id);
@@ -148,9 +151,12 @@ loadHome : async (req,res) => {
                 return res.redirect('/');
               }
               const userInfo = userData;
-            res.render('users/home',{userAlertmsg,user,userData,userInfo});
+
+              
+
+            res.render('users/home',{userAlertmsg,user,userData,userInfo,popular});
         }else{
-            res.render('users/home',{userAlertmsg});
+            res.render('users/home',{userAlertmsg,popular});
         }
         
     } catch (error) {
