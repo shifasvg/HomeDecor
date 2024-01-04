@@ -58,7 +58,6 @@ const userSchema = new Schema(
         },
         type: {
           type: String,
-          enum: ['credited', 'debited'],
           required: true,
         },
         description: {

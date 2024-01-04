@@ -7,6 +7,7 @@ const dbConnect = require('./config/dbConnect')
 const logger = require('morgan');
 const nocache = require('nocache');
 const path = require('path');
+const flash = require('connect-flash');
 const mongodbSession=require('connect-mongodb-session')(session)
 const store= new mongodbSession({
     uri:"mongodb://127.0.0.1:27017/homeDecorDB",
@@ -41,6 +42,7 @@ app.use(nocache());
 
 app.use(session({ secret: 'secret', cookie: { maxAge: 6000000 }, resave: false, saveUninitialized: true }));
 
+app.use(flash())
 // Apply user session middleware for user routes
 app.use('/', userRouter);
 

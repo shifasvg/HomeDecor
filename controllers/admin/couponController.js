@@ -57,6 +57,7 @@ addCoupon : async (req,res) => {
       const expiry = req.body.couponExpiry;
       const bill = req.body.minBill;
       const maxAmount = req.body.maxAmount;
+   
 
       const find = await Coupon.findOne({ code });
 

@@ -218,8 +218,6 @@ function updateCartItem(productId, newQty) {
    function couponApply(id1, bill1) {
     let coupon = document.getElementById("form3Examplea2").value;
     const bill = bill1;
-    console.log("bill", bill);
-    console.log("coupon", coupon);
 
     if (coupon == "") {
         document.getElementById("validation2").innerHTML = "";
@@ -241,10 +239,10 @@ function updateCartItem(productId, newQty) {
         .then(respo => respo.json())
         .then(response => {
             console.log('found', response);
-            if (response.code == coupon.toUpperCase()) {
-                if (response.Status == "Active") {
-                    if (response.minBill > bill) {
-                        document.getElementById("validation").innerHTML = "Minimum Bill Required is ₹ " + response.minBill;
+            if (response.couponFound.code == coupon.toUpperCase()) {
+                if (response.couponFound.Status == "Active") {
+                    if (response.couponFound.minBill > bill) {
+                        document.getElementById("validation").innerHTML = "Minimum Bill Required is ₹ " + response.couponFound.minBill;
                     } else {
                         document.getElementById("validation").innerHTML = "";
 
@@ -255,8 +253,8 @@ function updateCartItem(productId, newQty) {
 
                         if (couponDiscountElement && couponValueElement && totalBill2Element) {
                             couponDiscountElement.innerHTML = "Coupon Discount";
-                            couponValueElement.innerHTML = "Coupon Discount "+response.value + "%" +"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-₹"+Math.floor(bill * response.value / 100);
-                            totalBill2Element.innerHTML = "₹ " + Math.floor(bill - (bill * response.value / 100));
+                            couponValueElement.innerHTML = "Coupon Discount "+response.couponFound.value + "%" +"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-₹"+Math.floor(bill - response.final);
+                            totalBill2Element.innerHTML = "₹ " + Math.floor(response.final);
                             document.getElementById("validation2").innerHTML = coupon + "-Coupon Added Successfully";
                         } else {
                             console.error("One or more elements not found");

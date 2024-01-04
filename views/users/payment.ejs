@@ -24,6 +24,7 @@
 <div class="checkout-section section pt-90 pt-lg-70 pt-md-60 pt-sm-50 pt-xs-40 pb-70 pb-lg-50 pb-md-40 pb-sm-30 pb-xs-20">
     <div class="container" id="checkout">
         <div class="row">
+            
             <div class="col-12">
                 <!-- Checkout Form Start-->
                 <h4 class="checkout-title">Review your order and make payment</h4>
@@ -94,15 +95,18 @@
 <script>
     function confirmOrder(){
         $.ajax({
-            url:"confirm-order",
+            url:"/confirm-order",
             method:"get",
             success: (response) => {
                 if(response.codSuccess){
                     console.log("COD working");
-                    location.replace(('/show-confirm-order'))
+                    location.replace('/orderRedirect')
                 }else if (response.razorpay) {
           console.log("razorpay working")
           razorpay(response.order, response.bill)
+        }else if(response.walletSuccess){
+            console.log("wallet working");
+            location.replace('/orderRedirect')
         }
         else if(response.cartEmpty){
           location.replace('/cart')

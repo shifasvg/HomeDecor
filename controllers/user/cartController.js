@@ -270,7 +270,8 @@ module.exports = {
          
           }
        
-          const keyId = process.env.rpId
+          if(userData.wallet >= req.session.orderBill){
+            const keyId = process.env.rpId
             res.render('users/payment',{
               userAlertmsg,
               user,
@@ -282,6 +283,9 @@ module.exports = {
               keyId,
               deduction:req.session.deduction
             })
+          }else{
+            res.redirect('/checkout?userMessage=No sufficent balance')
+          }
           
         } catch (error) {
           console.log(error.message);
@@ -306,6 +310,7 @@ module.exports = {
             },
           });
           const cart = userData.cart;
+          console.log("userCartttt",cart)
           req.session.orderedCartItems = cart
           const cartItems = [];
           cart.forEach((item) => {
@@ -322,7 +327,7 @@ module.exports = {
             });
           })
 
-
+console.log("CartItemsss",cartItems)
 
           const address = {
             name: selectedAddress.name,
@@ -352,11 +357,6 @@ module.exports = {
           
           if(paymentMode == "Cash on delivery"){
             const newOrder = createOrders(cart, paymentMode, address, orderBill);
-           
-          
-            const orderSaved = await newOrder.save();
-            const cartUpdated = await User.findOneAndUpdate({ _id: user._id }, { $set: { cart: [] } }, { new: true });
-            // res.redirect('/show-confirm-order')
             res.json({codSuccess:true})
              
           }else if(paymentMode == 'Razorpay'){
@@ -377,6 +377,31 @@ module.exports = {
               res.json({ razorpay: true, order, bill });
             } else {
               throw new Error('error while creating order');
+            }
+          } else if (paymentMode == 'Wallet') {
+            if (userData.wallet >= orderBill) {
+              console.log("if wlalet have balanc")
+              createOrders(cart, paymentMode, address, orderBill);
+              await User.findByIdAndUpdate({ _id: userData._id }, { $inc: { wallet: -orderBill } });
+
+              const walletTrasaction = {
+                amount:orderBill,
+                type:'debited',
+                description:'Product purchase using wallet',
+                product: cart.forEach((item) => {
+                  item.prod_id.productname + ","
+                }),
+                date: new Date()
+            }
+             const updateWalletTrasaction = await User.findByIdAndUpdate(
+                { _id: userData._id },
+                { $push: { walletTransactions: walletTrasaction } },
+                { new: true }
+              );
+            await updateWalletTrasaction.save();
+    
+
+              res.json({ walletSuccess: true });
             }
           }
         
@@ -464,21 +489,21 @@ module.exports = {
         await Coupon.findOneAndUpdate({ code }, { $set: { Status: status } });
 
         const Vcoupon = await Coupon.findOne({ code }); // Extra validation
-
+        let final;
         if (Vcoupon.minBill < bill) {
           req.session.appliedCoupon = Vcoupon;
           const deduction = (bill * Vcoupon.value) / 100;
-          let final;
+         
           if (Vcoupon.maxAmount > deduction) {
             final = bill - (bill * Vcoupon.value) / 100;
           } else {
             final = bill - Vcoupon.maxAmount;
           }
-
+console.log("final",final)
           req.session.orderBill = Math.floor(final);
           req.session.deduction = Math.floor(deduction);
         }
-        res.json(couponFound);
+        res.json({couponFound,final});
       } else {
         res.json(couponFound);
       }
