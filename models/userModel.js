@@ -96,6 +96,8 @@ const userSchema = new Schema(
       default: [] // Initialize cart as an empty array by default
     },
 
+    
+
   wishlist: [mongoose.Types.ObjectId],
 
   orders:[{

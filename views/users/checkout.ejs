@@ -26,7 +26,23 @@
         <div class="row">
             <div class="col-12">
                 <!-- Checkout Form Start-->
-               
+               <!-- Discount Coupon -->
+                <div class="discount-coupon">
+                    <h4>Discount Coupon Code</h4>
+                    <div class="row">
+                        <div class="col-md-6 col-12 mb-25">
+                            <input type="text" name="coupon" placeholder="Coupon Code" id="form3Examplea2" value="<%= appliedCouponCode %>">
+                            <button class="remove-coupon-btn" onclick="removeCoupon('<%=cart._id%>','<%=totalBill%>')">
+                                <i class="fa fa-times"></i>
+                            </button>
+                            <button type="submit" class="btn" onclick="couponApply('<%=cart._id%>','<%=totalBill%>')">Apply Code</button><br>
+                            <span style="color: green;" id="validation2"><%= couponMsg %></span>
+                        <span style="color: red;" id="validation"><b></b></span>
+                        </div>
+                        
+                    </div>
+                </div>
+
                 <form action="/payment" method="post">
                     <div class="row row-40">
                         <div class="col-lg-7">
@@ -193,9 +209,9 @@
                                     <% subtotal += item.qty*item.unit_price %>
                                     <% }); %>
                                     <p style="border-bottom: none;">Subtotal <span>₹<%= subtotal %></span></p>   
-                                    <p>Coupon discount <span>- ₹<%=deduction%></span></p>
+                                    <p id="couponDiscount"><span id="couponValue"></span></p>
                                     <p>Shipping Fee <span>₹ 00.00</span></p>
-                                    <h4>Grand Total <span>₹ <%= totalBill %></span></h4>
+                                    <h4>Grand Total <span id="totalBill2">₹ <%= totalBill %></span></h4>
                                    
                                 </div>
                             </div>
@@ -235,6 +251,7 @@
                         </div>
                     </div>
                 </form>
+                 
             </div>
         </div>
     </div>
@@ -243,7 +260,109 @@
 
 <%- include('partials/userFooter.ejs') %>
 <script>
+
    
-</script>
+
+    function couponApply(id1, bill1) {
+     let coupon = document.getElementById("form3Examplea2").value;
+     const bill = bill1;
+ 
+     if (coupon == "") {
+         document.getElementById("validation2").innerHTML = "";
+         document.getElementById("validation").innerHTML = "Please enter a coupon code";
+     } else {
+         document.getElementById("validation2").innerHTML = "";
+         document.getElementById("validation").innerHTML = "";
+         fetch("/applyCoupon", {
+             method: "POST",
+             headers: {
+                 "Content-Type": "application/json"
+             },
+             body: JSON.stringify({
+                 coupon: coupon,
+                 bill: bill,
+             })
+         })
+ 
+         .then(respo => respo.json())
+         .then(response => {
+             console.log('found', response);
+             if(response.success == true){
+                if (response.couponFound.code == coupon.toUpperCase()) {
+                 if (response.couponFound.Status == "Active") {
+                     if (response.couponFound.minBill > bill) {
+                         document.getElementById("validation").innerHTML = "Minimum Bill Required is ₹ " + response.couponFound.minBill;
+                     } else {
+                         document.getElementById("validation").innerHTML = "";
+ 
+                         // Check if the elements exist before updating innerHTML
+                         const couponDiscountElement = document.getElementById("couponDiscount");
+                         const couponValueElement = document.getElementById("couponValue");
+                         const totalBill2Element = document.getElementById("totalBill2");
+ 
+                         if (couponDiscountElement && couponValueElement && totalBill2Element) {
+                             couponDiscountElement.innerHTML = "Coupon Discount";
+                             couponValueElement.innerHTML = "("+response.couponFound.value + "%) -₹"+Math.floor(bill - response.final); 
+                             console.log("value",couponValueElement)
+                             document.getElementById("form3Examplea2").innerHTML = response.couponFound.code
+                             totalBill2Element.innerHTML = "₹ " + Math.floor(response.final);
+
+                             document.getElementById("validation2").innerHTML = coupon + "-Coupon Added Successfully";
+                         } else {
+                             console.error("One or more elements not found");
+                             document.getElementById("totalBill2").innerHTML = "₹ " + bill;
+                         }
+                     }
+                 } else {
+                     document.getElementById("validation").innerHTML = "Coupon Expired";
+                     document.getElementById("totalBill2").innerHTML = "₹ " + bill;
+                 }
+             } else {
+                 document.getElementById("validation").innerHTML = "Coupon not found, try again";
+                 document.getElementById("totalBill2").innerHTML = "₹ " + bill;
+             }
+             }else {
+                // If response success is false, redirect to checkout
+                console.log("is it working")
+                window.location.href = '/checkout?userMessage=Coupon applied already';
+            }
+            
+         })
+         .catch(error => {
+             console.log(error);
+         });
+     }
+ }
+ 
+ function removeCoupon(id1, bill1){
+         document.getElementById('form3Examplea2').value = '';
+         document.getElementById("validation2").innerHTML = '';
+     
+         $.ajax({
+             url:'/removeCoupon',
+             method:'GET',
+             success: function(response){
+                 if(response.success){
+                     console.log('haiiid')
+                     const couponDiscountElement = document.getElementById("couponDiscount");
+                     const couponValueElement = document.getElementById("couponValue");
+                     const couponDiscount = document.getElementById("couponDiscount");
+                     document.getElementById("totalBill2").innerHTML="₹"+bill1;
+     
+         couponDiscountElement.innerHTML = '';
+         couponValueElement.innerHTML = '';
+         couponDiscount.innerHTML='';
+         
+         console.log('coupon removed')
+     
+                 }
+             }
+         })
+ 
+     }
+ 
+
+   </script>
+   
 
 

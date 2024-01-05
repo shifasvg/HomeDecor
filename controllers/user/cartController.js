@@ -116,6 +116,9 @@ module.exports = {
                 { $set: { 'cart.$[elem].qty': newQty, 'cart.$[elem].unit_price': product.price, 'cart.$[elem].total_price': tprice } },
                 { arrayFilters: [{ 'elem.prod_id': existingCartItem.prod_id }] }
               );
+              delete req.session.orderBill;
+                delete req.session.appliedCouponCode;
+                delete req.session.appliedMsg;
               const result = await getTotalSum(userData._id);
       
             // res.redirect(`/cart?userMessage=Product already in cart and qty updated`);
@@ -131,6 +134,9 @@ module.exports = {
             user.cart.push(newItem);
             const updatedUser = await user.save();
             if (updatedUser) {
+                delete req.session.orderBill;
+                delete req.session.appliedCouponCode;
+                delete req.session.appliedMsg;
                 res.redirect(`/product-view?id=${prdId}&userMessage=Product added to cart`);
             }
           }
@@ -153,36 +159,21 @@ module.exports = {
         // Remove the product from the cart
         user.cart = user.cart.filter(item => item.prod_id.toString() !== productId);
         await user.save();
+        delete req.session.orderBill;
+        delete req.session.appliedCouponCode;
+        delete req.session.appliedMsg;
         res.json({ message: 'Product removed from the cart successfully' });
         } catch (error) {
             console.error('Error removing product from cart:', error);
             res.status(500).json({ error: 'Internal Server Error' });
         }
       },
-    //    deleteCart : async (req, res) => {
-    //     try {
-    //       const user = req.session.userData;
-    //       const itemID = req.query.id;
-    //       const userData = await User.findById(user._id);
-    //       const existingCartItemIndex = userData.cart.findIndex(
-    //         (item) => item._id.toString() === itemID.toString() && item.size == req.query.size
-    //       );
-      
-    //       userData.cart.splice(existingCartItemIndex, 1);
-    //       await userData.save();
-    //       message = 'item deleted';
-    //       req.session.cartMessage = message;
-    //       return res.redirect(`/cart?id=${userData._id}`);
-    //     } catch (error) {
-    //       console.log(error.message);
-    //     }
-    //   }
 
       loadCheckout: async (req,res)=> {
         try {
             let userAlertmsg;
             let user;
-           
+           let totalBill
             if(req.query.userMessage || req.session.user){
                 userAlertmsg = req.query.userMessage;
                 user = req.session.user;
@@ -202,8 +193,9 @@ module.exports = {
                 }else{
                    totalBill = await getTotalSum(userId._id);
                 }
-              
-               
+              console.log("totalbill/session.orderBil",totalBill)
+              const appliedCouponCode = req.session.appliedCouponCode || '';
+              const couponMsg = req.session.appliedMsg || '';
                 if(req.session.userData){
                   res.render('users/checkout',{
                     userData,
@@ -212,7 +204,9 @@ module.exports = {
                     totalBill,
                     cart:userData.cart,
                     address:userData.address,
-                    deduction:req.session.deduction
+                    appliedCouponCode: appliedCouponCode,
+                    couponMsg,
+                   // deduction:req.session.deduction
                   })
                 }else{
                  return res.status(404).render('users/error')
@@ -270,7 +264,7 @@ module.exports = {
          
           }
        
-          if(userData.wallet >= req.session.orderBill){
+          if(userData.wallet >= req.session.orderBill || selectedPaymentMethod == "Razorpay"|| selectedPaymentMethod == "Cash on Delivery"){
             const keyId = process.env.rpId
             res.render('users/payment',{
               userAlertmsg,
@@ -281,7 +275,7 @@ module.exports = {
               cart:userData.cart,
               selectedPaymentMethod,
               keyId,
-              deduction:req.session.deduction
+             // deduction:req.session.deduction
             })
           }else{
             res.redirect('/checkout?userMessage=No sufficent balance')
@@ -423,7 +417,8 @@ console.log("CartItemsss",cartItems)
           await newOrder.save();
           
           await User.findOneAndUpdate({ _id: user._id }, { $set: { cart: [] } }, { new: true });
-      
+          delete req.session.orderBill;
+          console.log("is orderbill deleted",req.session.orderBill);
           return res.redirect('/show-confirm-order');
         } catch (error) {
           console.log('error while storing the order data');
@@ -452,7 +447,7 @@ console.log("CartItemsss",cartItems)
             orderBill:req.session.orderBill,
             item:selectedAddress,
             paymentMode,
-            deduction:req.session.deduction,
+           // deduction:req.session.deduction,
            
           })
 
@@ -476,40 +471,45 @@ console.log("CartItemsss",cartItems)
 
       applyCoupon : async (req,res) => {
         try {
-          const code = req.body.coupon;
-    const bill = req.body.bill;
 
-    const couponFound = await Coupon.findOne({ code });
-    if (couponFound) {
-      if (couponFound.Status === 'Active') {
-        const coupDate = new Date(couponFound.expiryDate);
-        const currDate = new Date();
-        const status = currDate.getTime() > coupDate.getTime() ? 'Expired' : 'Active';
-
-        await Coupon.findOneAndUpdate({ code }, { $set: { Status: status } });
-
-        const Vcoupon = await Coupon.findOne({ code }); // Extra validation
-        let final;
-        if (Vcoupon.minBill < bill) {
-          req.session.appliedCoupon = Vcoupon;
-          const deduction = (bill * Vcoupon.value) / 100;
-         
-          if (Vcoupon.maxAmount > deduction) {
-            final = bill - (bill * Vcoupon.value) / 100;
-          } else {
-            final = bill - Vcoupon.maxAmount;
+          if (!req.session.appliedCouponCode) {
+            const code = req.body.coupon;
+            const bill = req.body.bill;
+            const couponFound = await Coupon.findOne({ code });
+            if (couponFound) {
+              if (couponFound.Status === 'Active') {
+                const coupDate = new Date(couponFound.expiryDate);
+                const currDate = new Date();
+                const status = currDate.getTime() > coupDate.getTime() ? 'Expired' : 'Active';
+                await Coupon.findOneAndUpdate({ code }, { $set: { Status: status } });
+        
+                const Vcoupon = await Coupon.findOne({ code }); // Extra validation
+                let final;
+                if (Vcoupon.minBill < bill) {
+               
+                  const deduction = (bill * Vcoupon.value) / 100;
+                 
+                  if (Vcoupon.maxAmount > deduction) {
+                    final = bill - (bill * Vcoupon.value) / 100;
+                  } else {
+                    final = bill - Vcoupon.maxAmount;
+                  }
+                  req.session.appliedCouponCode = code;
+                  req.session.appliedMsg = code + "-Coupon Added Successfully"
+                  req.session.orderBill = Math.floor(final);
+        
+                }
+                res.json({success:true,couponFound,final});
+              } else {
+                res.json(couponFound);
+              }
+            } 
+          
+          }else{
+            res.json({success:false})
           }
-console.log("final",final)
-          req.session.orderBill = Math.floor(final);
-          req.session.deduction = Math.floor(deduction);
-        }
-        res.json({couponFound,final});
-      } else {
-        res.json(couponFound);
-      }
-    } else {
-      res.json(307);
-    }
+
+      
         } catch (error) {
           console.log(error.message);
           res.status(error.status || 500).json({ success: false, error: error.message });
@@ -518,16 +518,20 @@ console.log("final",final)
 
       removeCoupon: async (req,res) => {
         try {
-          delete req.session.appliedCoupon;
+          const userData = req.session.userData;
+          delete req.session.appliedCouponCode
           delete req.session.orderBill;
-          delete req.session.deduction;
+          delete req.session.appliedMsg
+          const result = await getTotalSum(userData._id);
   console.log("reomveddg")
-          res.json({ success: true });
+          res.json({ success: true, total:result });
         } catch (error) {
           console.log(error.message);
           res.status(error.status || 500).json({ success: false, error: error.message });
         }
-      }
+      },
+
+     
       
 
 
