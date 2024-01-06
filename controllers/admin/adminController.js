@@ -430,6 +430,32 @@ productLoad: async (req, res) => {
     }
   },
 
+  deletedProductLoad: async (req, res) => {
+    try {
+        
+        let adminAlertmsg;
+        if(req.query.message){
+           adminAlertmsg = req.query.message
+        }
+        const categories = await getCategory();
+      const products = await Product.find({isDeleted:true}).sort({ updatedAt: -1 }).populate('category');
+      if (products) {
+
+       
+            
+        res.render('admin/adminDeletedProducts', { products, adminAlertmsg, categories,});
+        
+
+        
+      } else {
+        res.redirect('/admin/dashboard?message=Products not found')
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  },
+
+
 //load add product
 loadAddNewProduct: async (req,res) => {
     try {
@@ -607,6 +633,23 @@ deleteProduct: async (req,res) => {
   }
 },
 
+restoreProduct: async (req,res) => {
+
+  const id = req.query.id;
+  try {
+    const result = await Product.updateOne({ _id: id }, { $set: { isDeleted: false } });
+    if (result) {
+      return res.redirect('/admin/products-management?message=Product restore');
+    } else {
+      return res.redirect('/admin/products-management?message=Something went wrong, please try again!');
+    }
+  }  catch (error) {
+    console.log(error.message);
+      const statusCode = error.status || 500;
+      res.status(statusCode).send(error.message);
+  }
+},
+
 //render order management page
 loadOrder: async(req,res) => {
   try {
@@ -631,22 +674,21 @@ editStatus : async (req,res) => {
       console.log('orderId body',orderId)
 
       const status = await Order.findOneAndUpdate(
-        { _id: orderId, 'items._id': itemOrderId },
-        { $set: { 'items.$.orderStatus': orderStatus } }
-      );
+        {
+            _id: orderId,
+            'items._id': itemOrderId,
+            'items.productId': productId // Add this condition if productId is unique
+        },
+        {
+            $set: { 'items.$.orderStatus': orderStatus }
+        }
+    );
       if (!status) {
         // Handle the case where no matching document was found
-        console.log("No matching document found");
+        console.log("No matching document found",status);
         return res.status(404).send("No matching document found");
       }
-      if (orderStatus == "Delivered") {
-        await Product.findOneAndUpdate(
-          { _id: productId },
-          {
-            $inc: { stock: -status.items[0].quantity },
-          }
-        );
-      }
+    
 res.redirect('/admin/orders')
 
   } catch (error) {
@@ -674,10 +716,9 @@ orderReport: async (req, res) => {
 
 downloadSales: async (req, res) => {
   try {
-   
-
     // Header row for the CSV
     const header = [
+      'Serial Number',
       'Product Name',
       'Product ID',
       'Quantity',
@@ -687,11 +728,15 @@ downloadSales: async (req, res) => {
       'Order Date',
       'Order Bill'
     ];
-
+console.log("header",header)
     // Convert the data to CSV format
-    const csvContent = `${header.join(',')}\n${Order.map(order => {
-      return order.items.map(item => {
-        return [
+    const rows = [];
+    let serialNumber = 1;
+
+    Order.forEach(order => {
+      order.items.forEach(item => {
+        const row = [
+          serialNumber++,
           item.productname,
           item._id,
           item.quantity,
@@ -700,9 +745,12 @@ downloadSales: async (req, res) => {
           order.paymentMode,
           formatDate(order.orderDate),
           order.orderBill
-        ].join(',');
-      }).join('\n');
-    }).join('\n')}`;
+        ];
+        rows.push(row.join(','));
+      });
+    });
+
+    const csvContent = `${header.join(',')}\n${rows.join('\n')}`;
 
     // Save the CSV content to a file
     fs.writeFileSync('public/sales_report.csv', csvContent);
@@ -714,6 +762,7 @@ downloadSales: async (req, res) => {
     console.log(error.message);
   }
 }
+
 
 
 }

@@ -45,28 +45,35 @@
                         </thead>
                         <tbody>
                             <% if (cart.length > 0) { %>
-                                <% cart.forEach(function(item) { %>
+                                <% for (let i=0; i < cart.length; i++) { %>
+                                  
                             <tr>
-                                <td class="pro-thumbnail"><a href="/product-view?id=<%=item.prod_id._id%>"><img src="images/<%=item.prod_id.images[0].filename %>" alt="Product"></a></td>
-                                <td class="pro-title"><a href="/product-view?id=<%=item.prod_id._id%>"><%= item.prod_id.productname %></a></td>
-                                <td class="pro-price"><span>₹<%= item.unit_price %></span></td>
+                                <td class="pro-thumbnail"><a href="/product-view?id=<%=cart[i].prod_id._id%>"><img src="images/<%=cart[i].prod_id.images[0].filename %>" alt="Product"></a></td>
+                                <td class="pro-title"><a href="/product-view?id=<%=cart[i].prod_id._id%>"><%= cart[i].prod_id.productname %></a></td>
+                                <td class="pro-price"><span>₹<%= cart[i].unit_price %></span></td>
+                                <!--update qty button-->
                                 <td class="pro-quantity">
                                     <div class="pro-qty">
-                                        <input type="number" value="<%= item.qty %>" data-product-id="<%= item.prod_id._id %>" data-product-stock="item.prod_id.stock"  onchange="updateCartItem('<%= item.prod_id._id %>', this.value)">
+                                        <button class="dec qtybtn" onclick="test('<%=cart[i].prod_id._id %>','<%=totalQuantity%>',-1,'<%= cart[i].unit_price %>','<%= cart[i].prod_id.stock %>','<%= i %>')">-</button>
+
+                                        <input id="cartProductqty<%= i %>"  type="text" value="<%= cart[i].qty %>" readonly>
+                                        <button class="inc qtybtn" onclick="test('<%= cart[i].prod_id._id %>','<%=totalQuantity%>',1,'<%= cart[i].unit_price %>','<%= cart[i].prod_id.stock %>','<%= i %>')">+</button>
                                     </div>
                                 </td>
                                 
-                                <td class="pro-subtotal"><span>₹<%= item.qty*item.unit_price %></span></td>
+                                <td class="pro-subtotal"><span id="subtotal<%= i %>">₹<%= cart[i].qty*cart[i].unit_price %></span></td>
                                 <td class="pro-remove">
-                                    <a href="#" class="remove-item" data-product-id="<%= item.prod_id._id %>">
+                                    <a href="#" class="remove-item" data-product-id="<%= cart[i].prod_id._id %>">
                                         <i class="fa fa-trash-o"></i>
                                     </a>
                                 </td>
                                 
                             </tr>
-                            <% }); %>
+                            <% } %>
                             <% } else { %>
-                            <tr><td>No items found</td></tr>
+                                <tr>
+                                    <td colspan="6">No items found</td>
+                                </tr>
                             <% } %>
                         </tbody>
                     </table>
@@ -84,15 +91,11 @@
                         <div class="cart-summary">
                             <div class="cart-summary-wrap">
                                 <h4>Cart Summary</h4>
-                                <% let totalQuantity = 0; %>
-                                <% cart.forEach(function(item) { %>
-                                <% totalQuantity += item.qty; %>
-                                <% }); %>
-                                <p>Sub Total (<%= totalQuantity %> items) <span>₹<%=cartBill%></span></p>
+                                <p>Sub Total (<%= totalQuantity %> items) <span id="total">₹<%=cartBill%></span></p>
                                 <!-- <p id="couponCode"></p> -->
                             
                                 <div><p>Shipping Cost <span>FREE</span></p></div>
-                                <h2>Grand Total <span >₹<%=cartBill%></span></h2>
+                                <h2>Grand Total <span id="finaltotal">₹<%=cartBill%></span></h2>
                             </div>
                             <div class="cart-summary-button">
                                <a href="/checkout"> <button class="btn">Checkout</button></a>
@@ -149,46 +152,67 @@
 /*----- 
 	Quantity
 --------------------------------*/
-$('.pro-qty').prepend('<button class="dec qtybtn">-</button>');
-$('.pro-qty').append('<button class="inc qtybtn">+</button>');
-$('.qtybtn').on('click', function() {
-	var $button = $(this);
-	var oldValue = $button.parent().find('input').val();
-	if ($button.hasClass('inc')) {
-	  var newVal = parseFloat(oldValue) + 1;
-	} else {
-	   // Don't allow decrementing below zero
-	  if (oldValue > 1) {
-		var newVal = parseFloat(oldValue) - 1;
-		} else {
-		newVal = 1;
-	  }
-	  }
-      
-	let newdata=$button.parent().find('input').val(newVal);
-    var productId = newdata.data('product-id');
-        updateCartItem(productId, newVal);
 
-});
+function test(productId, cartQty, count, prPrice, pqty, i){
+    // Get the relevant HTML elements
+    const cartProductQtyElement = document.querySelector(`#cartProductqty${i}`);
+    const subtotalElement = document.querySelector(`#subtotal${i}`);
+    const totalElement = document.querySelector('#total');
+    const finalTotalElement = document.querySelector('#finaltotal');
+    if (!cartProductQtyElement) {
+        console.error(`Element not found: #cartProductqty${i}`);
+        return;
+    }
+      // Get the current values from the HTML elements
+      let currentQuantity = parseInt(cartProductQtyElement.value);
+    const currentSubtotal = parseFloat(subtotalElement.innerText.replace('₹', ''));
+    const currentTotal = parseFloat(totalElement.innerText.replace('₹', ''));
 
-function updateCartItem(productId, newQty) {
-    $.ajax({
+     // Calculate the new values
+     const newQuantity = currentQuantity + count;
+
+     // Prevent decrementing below 1
+    if (count === -1 && newQuantity < 1) {
+        return; // Don't update or send the AJAX request
+    }
+
+    // Prevent incrementing beyond the product's available quantity
+    if (count === 1 && newQuantity > pqty) {
+        Swal.fire({
+            title: 'STOCK!',
+            text: 'Product is out of stock.',
+            icon: 'error',
+            timer: 5000
+        });
+        return; // Don't update or send the AJAX request
+    }
+    const newSubtotal = newQuantity * prPrice;
+    const newTotal = currentTotal - currentSubtotal + newSubtotal;
+
+    // Update the HTML elements with the new values
+    cartProductQtyElement.value = newQuantity;
+    subtotalElement.innerHTML ="₹"+newSubtotal;
+    totalElement.innerHTML ="₹"+newTotal;
+    finalTotalElement.innerHTML ="₹"+newTotal;
+
+ // Now you can send the updated data in your AJAX request
+ $.ajax({
         url: `/addtocart?prdId=${productId}`,
         method: 'POST',
-        data: { qty: newQty },
-        success: function(response) {
-            // Handle success response (if needed)
-            console.log('Cart item updated successfully');
-             window.location.reload();
-            // You can update the UI or display a success message here
+        data: { qty: newQuantity },
+        success: function (response) {
+            // Handle the success response if needed
         },
-        error: function(error) {
-            // Handle error response (if needed)
-            console.error('Error updating cart item:', error);
-            // You can display an error message to the user
+        error: function (error) {
+            alert("I am here with an error");
+            alert(error);
         }
     });
+
+
 }
+
+
 
 
 </script>

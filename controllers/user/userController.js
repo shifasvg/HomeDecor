@@ -760,18 +760,19 @@ if(req.query.catid){
     // console.log("categories ===="+categories)
      //console.log("categoryproducts ==="+products)
    
-     const itemsperpage = 2;
+     const itemsperpage = 3;
      const currentpage = parseInt(req.query.page) || 1;
      const startindex = (currentpage - 1) * itemsperpage;
      const endindex = startindex + itemsperpage;
-     const totalpages = Math.ceil(products.length / 2);
+     const totalpages = Math.ceil(products.length / 3);
      const currentproduct = products.slice(startindex,endindex);
+
 
       res.render('users/shop', {
       
         categories: categories,
-    products,
-userAlertmsg, user, userData,userInfo,currentproduct, totalpages,currentpage})
+    products:currentproduct,
+userAlertmsg, user, userData,userInfo, totalpages,currentpage})
 }else{
     const cproducts = await productCollection.aggregate([
         {
@@ -779,7 +780,7 @@ userAlertmsg, user, userData,userInfo,currentproduct, totalpages,currentpage})
         },
         {
             $lookup: {
-                from: 'categories', // Replace 'categories' with the actual name of your categories collection
+                from: 'categories', 
                 localField: 'category',
                 foreignField: '_id',
                 as: 'category'
@@ -792,20 +793,21 @@ userAlertmsg, user, userData,userInfo,currentproduct, totalpages,currentpage})
             $match: { 'category.active': true }
         }
     ]).exec();
-    
+   
     const itemsperpage = 3;
     const currentpage = parseInt(req.query.page) || 1;
     const startindex = (currentpage - 1) * itemsperpage;
     const endindex = startindex + itemsperpage;
-    const totalpages = Math.ceil(cproducts.length / 3);
     
-    let products;
-
+    
+    let products,p,totalpages
     if (!result) {
+        totalpages = Math.ceil(cproducts.length / 3);
         products = cproducts.slice(startindex, endindex);
     } else {
-        products = await productCollection.find({_id:result});
-        console.log("inshop",products)
+        p = req.session.result || [];
+        totalpages = Math.ceil(p.length / 3);
+        products = p.slice(startindex, endindex);
     }
 
       res.render('users/shop', {
@@ -822,6 +824,7 @@ userAlertmsg, user,userData,userInfo, totalpages,currentpage})
       }
 
   },
+  
         //display category products
         displayCategory: async (req,res) =>{
             const categoryId = req.query.id;
@@ -968,10 +971,11 @@ console.log(req.session.user+"haiiiiii")
                 },
               });
               console.log("Resulffj",result)
-              res.redirect(`/shop?result=${result[0]._id}`);
+              req.session.result = result;
+              res.redirect(`/shop?result=true`);
             //   res.render('users/shop', { userData, categories, products: result, user, userAlertmsg, userInfo });
             } else {
-              res.render('users/shop', { categories, products: result, userAlertmsg, userInfo });
+              res.render('users/shop', { categories, products: result, userAlertmsg, userInfo, user });
             }
         } catch (error) {
             console.log(error.message);
@@ -1022,13 +1026,13 @@ console.log(req.session.user+"haiiiiii")
     const startindex = (currentpage - 1) * itemsperpage;
     const endindex = startindex + itemsperpage;
     const totalpages = Math.ceil(products.length / 3);
-
+    const currentproduct = products.slice(startindex,endindex);
   console.log('hello',products)    
 
   res.render('users/shop', {
       
     categories: categories,
-products,
+products:currentproduct,
 userAlertmsg, user,userData,userInfo, totalpages,currentpage})
     
     

@@ -9,14 +9,20 @@
     <div class="col-12">
       <div class="card mb-4">
 
+    
+
         <div class="card-header pb-0 d-flex justify-content-between align-items-center">
           <h6 class="text-left mb-0">Sales report</h6>
-
-        <h6><a onclick="downloadSalesReport()" class="btn btn-primary">download</a></h6>
-        <h6><a onclick="pdf('tablePrint')" class="btn btn-primary">pdf</a></h6>
-        
-        </div>
-
+          <div class="ml-auto">
+              <button class="btn" style="border: 1px solid rgb(184, 184, 184);">
+                <a onclick="downloadSalesReport()" >download</a>
+              </button>
+              <button class="btn mr-2" style="border: 1px solid rgb(184, 184, 184);">
+                <a onclick="pdf('tablePrint')" >pdf</a>
+            </button>
+          </div>
+      </div>
+      
         
         <div class="card-body px-0 pt-0 pb-2">
           <div class="table-responsive p-0" id="tablePrint">

@@ -43,20 +43,26 @@ module.exports = {
             path: 'cart.prod_id', // Path to the product reference field
             model: 'Product', // Model to populate from (should match ref in schema)
           });
-    console.log("cartUser"+cartUser)
+   
           if (!user) {
             return res.status(404).render('users/error', { err404Msg: 'The requested resource was not found' });
           }
     
           const cart = cartUser ? cartUser.cart : [];
+       console.log("cartusersss",cart)
     const userInfo = cartUser;
-    const productStock = cart.map(cartItem => cartItem.prod_id.stock);
+  
              const result = await getTotalSum(userData._id);
              let headerData = userData
+             let totalQuantity = 0;
+             cart.forEach(function(item) { 
+              totalQuantity += item.qty;  });
+console.log("totalqtu",totalQuantity)
             res.render('users/cart',{
                 cart,
+                totalQuantity,
                 cartBill: result,
-                productStock,
+          
                 userData,
                 userAlertmsg,
                 user,
@@ -83,7 +89,6 @@ module.exports = {
           const newQty = req.body.qty;
           console.log("Qtyyyy" + newQty);
           const userData = req.session.userData;
-          console.log("userDataaa"+userData)
           const goToCart = req.body.goToCart === 'true';
           if (!userData) {
             res.status(401).redirect('/signin?userMessage=Please login to access cart!');
@@ -122,8 +127,7 @@ module.exports = {
               const result = await getTotalSum(userData._id);
       
             // res.redirect(`/cart?userMessage=Product already in cart and qty updated`);
-            res.json({
-              grandTotal:result})
+            res.json({itemTotalPrice:tprice,grandTotal:result})
           } else {
             const newItem = {
               prod_id: prdId, // Use prdId instead of id 
@@ -264,7 +268,7 @@ module.exports = {
          
           }
        
-          if(userData.wallet >= req.session.orderBill || selectedPaymentMethod == "Razorpay"|| selectedPaymentMethod == "Cash on Delivery"){
+          // if(userData.wallet >= req.session.orderBill || selectedPaymentMethod == "Razorpay"|| selectedPaymentMethod == "Cash on Delivery"){
             const keyId = process.env.rpId
             res.render('users/payment',{
               userAlertmsg,
@@ -277,9 +281,9 @@ module.exports = {
               keyId,
              // deduction:req.session.deduction
             })
-          }else{
-            res.redirect('/checkout?userMessage=No sufficent balance')
-          }
+          // }else{
+          //   res.redirect('/checkout?userMessage=No sufficent balance')
+          // }
           
         } catch (error) {
           console.log(error.message);
@@ -304,7 +308,7 @@ module.exports = {
             },
           });
           const cart = userData.cart;
-          console.log("userCartttt",cart)
+        
           req.session.orderedCartItems = cart
           const cartItems = [];
           cart.forEach((item) => {
@@ -321,7 +325,6 @@ module.exports = {
             });
           })
 
-console.log("CartItemsss",cartItems)
 
           const address = {
             name: selectedAddress.name,
@@ -416,9 +419,28 @@ console.log("CartItemsss",cartItems)
           const newOrder = new Order(order);
           await newOrder.save();
           
+          
+           // Update product stock
+    const cart = req.session.orderedCartItems;
+    
+    for (const item of cart) {
+      const id = item.prod_id._id;
+      const result2 = await Product.findOneAndUpdate(
+        { _id: id },
+        { $inc: { stock: -item.qty } },
+        { new: true }
+      );
+    
+    }
+
+
+
           await User.findOneAndUpdate({ _id: user._id }, { $set: { cart: [] } }, { new: true });
+
+          delete req.session.appliedCouponCode
           delete req.session.orderBill;
-          console.log("is orderbill deleted",req.session.orderBill);
+          delete req.session.appliedMsg
+         
           return res.redirect('/show-confirm-order');
         } catch (error) {
           console.log('error while storing the order data');

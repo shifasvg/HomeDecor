@@ -56,7 +56,9 @@
                           <%= item.orderStatus %>
                         </td>
                         <td>
-                          <!-- <% if(item.orderStatus != "Cancelled"){%> -->
+                          <% if (item.orderStatus === "Delivered") { %>
+                            <p>Order Delivered</p>
+                          <% } else if (item.orderStatus !== "Cancelled by seller" && item.orderStatus !== "Cancelled by customer") { %>
                           <!-- Form for changing order status -->
                           <form action="/admin/editStatus?itemOrderId=<%= item._id %>" method="post">
                             <select name="newStatus" class="select-status">
@@ -67,13 +69,15 @@
                               <option value="Delivered">Delivered</option>
                             </select>
                             <input type="hidden" name="productId" value="<%= item.productId %>">
-                            <input type="hidden" name="orderId" value="<%= orders[0]._id %>">
+                            <input type="hidden" name="orderId" value="<%= order._id %>">
 
                             <button type="submit" class="button-save">Save</button>
                           </form>
-                          <!-- <%}else{%>
-                            <p>order cancelled</p>
-                            <%}%> -->
+                          <% } else if (item.orderStatus === "Delivered") { %>
+                            <p>Order Delivered</p>
+                          <% } else { %>
+                            <p>Order Cancelled</p>
+                          <% } %>
                         </td>
                       </tr>
                     <% }); %>

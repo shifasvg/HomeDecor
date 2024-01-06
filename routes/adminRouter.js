@@ -30,13 +30,14 @@ router.get('/category-management/delete', middle.loggedIn, controller.deleteCate
 
 //admin product management
 router.get('/products-management', controller.productLoad);
-
+router.get('/deleted-products', controller.deletedProductLoad);
 router.get('/products-management/add-new-product', controller.loadAddNewProduct);
 router.post('/products-management/add-new-product', upload.array('images'), controller.addNewProduct);
 
 router.get('/products-management/edit-product',controller.loadEditProduct);
 router.post('/products-management/edit-product', upload.array('images'), controller.editProduct);
-router.get('/products-management/delete', controller.deleteProduct)
+router.get('/products-management/delete', controller.deleteProduct);
+router.get('/products-management/restore', controller.restoreProduct);
 // router.get('/products-management/edit', controller.productEdit);
 // router.post('/products-management/update',controller.productupdate)
 

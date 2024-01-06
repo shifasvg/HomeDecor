@@ -235,13 +235,19 @@
                                         <input type="radio" id="payment_paypal" name="paymentMethod" value="Razorpay">
                                         <label for="payment_paypal">Online Payment</label>
                                     </div>
-
-                                    <div class="single-method">
-                                        <input type="radio" id="payment_wallet" name="paymentMethod" value="Wallet">
-                                        <label for="payment_wallet">Wallet <br>  <span style="font-size: 13px;">Wallet Balance: ₹<%=userData.wallet%> </span> </label>
-                                       
-                                    </div>
-
+                                    <% if (userData.wallet >= totalBill) { %>
+                                        <div class="single-method">
+                                            <input type="radio" id="payment_wallet" name="paymentMethod" value="Wallet">
+                                            <label for="payment_wallet">Wallet <br>  <span style="font-size: 13px;">Wallet Balance: ₹<%= userData.wallet %></span> </label>
+                                        </div>
+                                    <% } else { %>
+                                        <div class="single-method">
+                                            <input type="radio" id="payment_wallet" name="paymentMethod" value="Wallet" disabled>
+                                            <label for="payment_wallet">Wallet <br>  <span style="font-size: 13px;">Wallet Balance: ₹<%= userData.wallet %></span> <br> <span style="color: red;">No sufficent balance</span> </label>
+                                            
+                                        </div>
+                                    <% } %>
+                                    
                                 </div>l
                                 <div id="message_container" style="display: none; color: red;"></div>
                                     <button type="submit" class="place-order btn btn-lg btn-round" id="my_button">Place order</button>
